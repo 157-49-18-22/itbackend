@@ -9,8 +9,7 @@
     "build": "echo 'Build complete'",
     "migrate": "node scripts/migrate.js",
     "seed": "node scripts/seed.sql.js",
-    "db:reset": "node scripts/resetDatabase.js",
-    "postinstall": "npm run migrate"
+    "db:reset": "node scripts/resetDatabase.js"
   },
   "keywords": [
     "express",
