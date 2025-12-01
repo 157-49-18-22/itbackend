@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "root",
+    "password": "gullygang123!",
+    "database": "it_agency_pms",
+    "host": "localhost",
+    "port": 3306,
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "gullygang123!",
+    "database": "it_agency_pms_test",
+    "host": "localhost",
+    "port": 3306,
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "gullygang123!",
+    "database": "it_agency_pms_prod",
+    "host": "localhost",
+    "port": 3306,
+    "dialect": "mysql"
+  }
+}
