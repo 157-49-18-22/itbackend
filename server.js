@@ -10,6 +10,17 @@ const { connectDB } = require('./config/database');
 
 const app = express();
 
+// DEBUG: Log all requests
+app.use((req, res, next) => {
+  console.log(`👉 Request: ${req.method} ${req.url}`);
+  next();
+});
+
+// Root route
+app.get('/', (req, res) => {
+  res.status(200).send('IT Agency PMS Backend is Running! 🚀');
+});
+
 // Import routes
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
@@ -94,8 +105,9 @@ app.use('/api/', limiter);
 // Static files (for uploads)
 app.use('/uploads', express.static('uploads'));
 
-// Health check route - Moved to top
+// Health check route
 app.get('/health', (req, res) => {
+  console.log('✅ Health check hit!');
   res.status(200).json({
     status: 'OK',
     message: 'IT Agency PMS API is running',
