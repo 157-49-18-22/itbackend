@@ -1,5 +1,4 @@
 const { DataTypes } = require('sequelize');
-const bcrypt = require('bcryptjs');
 
 module.exports = (sequelize) => {
   const User = sequelize.define('User', {
@@ -80,13 +79,13 @@ module.exports = (sequelize) => {
   });
 
   // Instance method to check password (plain text comparison)
-  User.prototype.validPassword = async function(password) {
+  User.prototype.validPassword = async function (password) {
     if (!this.password) return false;
     return password === this.password;
   };
 
   // Class methods
-  User.associate = function(models) {
+  User.associate = function (models) {
     User.hasMany(models.Project, { foreignKey: 'managerId', as: 'managedProjects' });
     User.belongsToMany(models.Project, { through: 'ProjectMembers', as: 'projects' });
     User.hasMany(models.Task, { foreignKey: 'assignedTo', as: 'assignedTasks' });

@@ -14,7 +14,9 @@ if (process.env.DATABASE_URL) {
         rejectUnauthorized: false
       }
     },
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    host: process.env.DB_HOST || undefined, // Force hostname if needed
+    dialectModule: require('pg'),
+    native: false,
     pool: {
       max: 5,
       min: 0,
