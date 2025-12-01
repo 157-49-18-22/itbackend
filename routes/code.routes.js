@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
-const codeController = require('../../backend/controllers/code.controller');
-const { protect } = require('../../backend/middleware/auth.middleware');
-const validateRequest = require('../../backend/middleware/validateRequest.middleware');
+const codeController = require('../controllers/code.controller');
+const { protect } = require('../middleware/auth.middleware');
+const validateRequest = require('../middleware/validateRequest.middleware');
 
 // Validation rules
 const createCodeFileValidation = [
