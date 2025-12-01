@@ -10,6 +10,9 @@ const { connectDB } = require('./config/database');
 
 const app = express();
 
+// Trust proxy (required for Render/Heroku deployment)
+app.set('trust proxy', 1);
+
 // DEBUG: Log all requests
 app.use((req, res, next) => {
   console.log(`👉 Request: ${req.method} ${req.url}`);
