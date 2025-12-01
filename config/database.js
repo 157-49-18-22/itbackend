@@ -37,7 +37,16 @@ const connectDB = async () => {
       console.log('✅ Database tables synchronized');
     }
   } catch (error) {
-    console.error('❌ Database Connection Error:', error.message);
+    console.error('❌ Database Connection Error:');
+    console.error('Error Message:', error.message);
+    console.error('Error Details:', error);
+    console.error('Connection Config:', {
+      dialect: process.env.DB_DIALECT,
+      host: process.env.DB_HOST,
+      database: process.env.DB_NAME,
+      hasPassword: !!process.env.DB_PASSWORD,
+      hasDatabaseUrl: !!process.env.DATABASE_URL
+    });
     // process.exit(1); // Removed to keep server alive without DB
   }
 };
