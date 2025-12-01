@@ -30,7 +30,7 @@ const connectDB = async () => {
   try {
     await sequelize.authenticate();
     console.log(`✅ ${process.env.DB_DIALECT?.toUpperCase() || 'MySQL'} Database Connected Successfully`);
-    
+
     // Sync models in development (creates tables if they don't exist)
     if (process.env.NODE_ENV === 'development') {
       await sequelize.sync({ alter: false }); // Set to true to auto-update schema
@@ -38,7 +38,7 @@ const connectDB = async () => {
     }
   } catch (error) {
     console.error('❌ Database Connection Error:', error.message);
-    process.exit(1);
+    // process.exit(1); // Removed to keep server alive without DB
   }
 };
 
