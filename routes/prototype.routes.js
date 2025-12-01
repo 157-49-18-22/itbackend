@@ -4,7 +4,7 @@ const { check } = require('express-validator');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { protect } = require('../../Backend/middleware/auth.middleware');
+const { protect } = require('../middleware/auth.middleware');
 
 // Ensure uploads directory exists
 const UPLOAD_DIR = path.join(__dirname, '../../uploads/prototypes');

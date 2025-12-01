@@ -4,7 +4,7 @@ const { check } = require('express-validator');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { protect, authorize } = require('../../Backend/middleware/auth.middleware');
+const { protect, authorize } = require('../middleware/auth.middleware');
 const {
   createMockup,
   getMockups,
