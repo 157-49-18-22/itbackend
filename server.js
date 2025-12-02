@@ -68,7 +68,8 @@ app.use(cors({
       process.env.CLIENT_URL || 'http://localhost:5173',
       'http://localhost:3000',
       'http://127.0.0.1:5173',
-      'http://localhost:5000'
+      'http://localhost:5000',
+      'https://it-agency-gold.vercel.app'
     ];
 
     if (allowedOrigins.indexOf(origin) === -1) {
