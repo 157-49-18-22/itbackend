@@ -40,45 +40,57 @@ exports.register = async (req, res) => {
 // @access  Public
 exports.login = async (req, res) => {
   try {
+    console.log('👉 Login Request Body:', req.body);
     const { email, password } = req.body;
 
     // Validate email & password
     if (!email || !password) {
+      console.log('❌ Missing email or password');
       return res.status(400).json({
         success: false,
         message: 'Please provide email and password'
       });
     }
 
-    console.log('Login attempt for email:', email);
-    
+    console.log('🔍 Finding user with email:', email);
+
     // Check for user (Sequelize doesn't hide password by default, we handle it in model)
-    const user = await User.findOne({ 
+    const user = await User.findOne({
       where: { email },
       attributes: { include: ['password'] },
       raw: true // Get plain object instead of model instance
     });
 
-    console.log('User found:', user ? 'Yes' : 'No');
-    
+    console.log('👤 User found result:', user ? 'Found' : 'Not Found');
+
     if (!user) {
+      console.log('❌ User not found in DB');
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials: User not found'
       });
     }
 
-    console.log('User password from DB:', user.password);
-    console.log('Provided password:', password);
-    
+    console.log('🔑 User ID:', user.id);
+    console.log('🔑 Stored Password:', user.password);
+    console.log('🔑 Provided Password:', password);
+
     // Create a temporary user object with the comparePassword method
+    console.log('🔄 Fetching user instance for method access...');
     const userInstance = await User.findByPk(user.id);
-    
+
+    if (!userInstance) {
+      console.log('❌ Failed to fetch user instance');
+      throw new Error('User instance could not be fetched');
+    }
+
+    console.log('🔄 Comparing passwords...');
     // Check if password matches
     const isMatch = await userInstance.comparePassword(password);
-    console.log('Password match:', isMatch);
+    console.log('✅ Password match result:', isMatch);
 
     if (!isMatch) {
+      console.log('❌ Password mismatch');
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
@@ -87,6 +99,7 @@ exports.login = async (req, res) => {
 
     // Check if user is active
     if (user.status !== 'active') {
+      console.log('❌ User inactive');
       return res.status(401).json({
         success: false,
         message: 'Your account is inactive. Please contact admin.'
@@ -94,9 +107,9 @@ exports.login = async (req, res) => {
     }
 
     // Check for tester role restrictions
-    if (user.role.toLowerCase() === 'tester') {
-      // Only allow login if email matches the specific tester pattern
+    if (user.role && user.role.toLowerCase() === 'tester') {
       if (email.toLowerCase() !== 'tester@gmail.com') {
+        console.log('❌ Tester restriction applied');
         return res.status(401).json({
           success: false,
           message: 'Access restricted for tester role. Please use the designated tester account.'
@@ -104,7 +117,8 @@ exports.login = async (req, res) => {
       }
     }
 
-    // Update last login using update method since 'user' is a plain object
+    // Update last login
+    console.log('🔄 Updating last login...');
     await User.update(
       { lastLogin: new Date() },
       { where: { id: user.id } }
@@ -113,11 +127,15 @@ exports.login = async (req, res) => {
     // Get the updated user data
     const updatedUser = await User.findByPk(user.id);
 
+    console.log('✅ Login successful, sending token...');
     sendTokenResponse(updatedUser, 200, res);
   } catch (error) {
+    console.error('❌ LOGIN ERROR:', error);
+    console.error('❌ Stack:', error.stack);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 };
