@@ -55,6 +55,15 @@ const deploymentRoutes = require('./routes/deployment.routes');
 const testCaseRoutes = require('./routes/testCase.routes');
 const uiuxRoutes = require('./routes/uiux.routes');
 
+// ENHANCED Routes (New Features)
+const projectStagesRoutes = require('./routes/projectStages.routes');
+const stageTransitionsRoutes = require('./routes/stageTransitions.routes');
+const commentsRoutes = require('./routes/comments.routes');
+const taskChecklistsRoutes = require('./routes/taskChecklists.routes');
+const dashboardRoutes = require('./routes/dashboard.routes');
+const notificationsEnhancedRoutes = require('./routes/notifications.routes');
+const approvalsEnhancedRoutes = require('./routes/approvals.routes');
+
 // Middleware
 app.use(helmet()); // Security headers@stage
 app.use(compression()); // Compress responses
@@ -153,6 +162,16 @@ app.use('/api/stage-transitions', stageTransitionRoutes);
 app.use('/api/deployments', deploymentRoutes);
 app.use('/api/test-cases', testCaseRoutes);
 app.use('/api/uiux', uiuxRoutes);
+
+// ENHANCED API Routes (New Features)
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/comments', commentsRoutes);
+app.use('/api/projects/:projectId/stages', projectStagesRoutes);
+app.use('/api/projects/:projectId/stage-transitions', stageTransitionsRoutes);
+app.use('/api/tasks/:taskId/checklist', taskChecklistsRoutes);
+// Override old routes with enhanced versions
+app.use('/api/notifications-enhanced', notificationsEnhancedRoutes);
+app.use('/api/approvals-enhanced', approvalsEnhancedRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
