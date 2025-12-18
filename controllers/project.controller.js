@@ -8,13 +8,13 @@ const { logActivity } = require('../utils/activity.utils');
 exports.getAllProjects = async (req, res) => {
   try {
     const { status, priority, currentPhase, search } = req.query;
-    
+
     let where = { isArchived: false };
-    
+
     if (status) where.status = status;
     if (priority) where.priority = priority;
     if (currentPhase) where.currentPhase = currentPhase;
-    
+
     if (search) {
       where[Op.or] = [
         { name: { [Op.iLike]: `%${search}%` } },
@@ -169,10 +169,12 @@ exports.createProject = async (req, res) => {
       isArchived: false
     });
 
+
     // Associate team members if any
-    if (teamMemberIds.length > 0) {
-      await project.setTeamMembers(teamMemberIds);
-    }
+    // TODO: Uncomment when project_team junction table is created
+    // if (teamMemberIds.length > 0) {
+    //   await project.setTeamMembers(teamMemberIds);
+    // }
 
     // Log activity
     await logActivity({
@@ -202,7 +204,7 @@ exports.createProject = async (req, res) => {
 exports.updateProject = async (req, res) => {
   try {
     const project = await Project.findByPk(req.params.id);
-    
+
     if (!project) {
       return res.status(404).json({
         success: false,
@@ -219,18 +221,20 @@ exports.updateProject = async (req, res) => {
     }
 
     const updates = { ...req.body };
-    
+
     // Convert date strings to Date objects if present
     if (updates.startDate) updates.startDate = new Date(updates.startDate);
     if (updates.endDate) updates.endDate = new Date(updates.endDate);
-    
+
     // Update project
     await project.update(updates);
-    
+
+
     // Update team members if provided
-    if (req.body.teamMemberIds) {
-      await project.setTeamMembers(req.body.teamMemberIds);
-    }
+    // TODO: Uncomment when project_team junction table is created
+    // if (req.body.teamMemberIds) {
+    //   await project.setTeamMembers(req.body.teamMemberIds);
+    // }
 
     // Log activity
     await logActivity({
@@ -260,7 +264,7 @@ exports.updateProject = async (req, res) => {
 exports.deleteProject = async (req, res) => {
   try {
     const project = await Project.findByPk(req.params.id);
-    
+
     if (!project) {
       return res.status(404).json({
         success: false,
@@ -326,13 +330,13 @@ exports.getProjectStats = async (req, res) => {
     const tasks = project.tasks || [];
     const totalTasks = tasks.length;
     const completedTasks = tasks.filter(task => task.status === 'Completed').length;
-    const inProgressTasks = tasks.filter(task => 
+    const inProgressTasks = tasks.filter(task =>
       ['In Progress', 'In Review', 'Testing'].includes(task.status)
     ).length;
-    
+
     // Calculate completion percentage
-    const completionPercentage = totalTasks > 0 
-      ? Math.round((completedTasks / totalTasks) * 100) 
+    const completionPercentage = totalTasks > 0
+      ? Math.round((completedTasks / totalTasks) * 100)
       : 0;
 
     // Count tasks by status

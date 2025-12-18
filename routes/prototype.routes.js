@@ -80,7 +80,7 @@ router.post(
 router.get(
   '/',
   [
-    check('projectId', 'Project ID is required').isInt(),
+    check('projectId').optional().isInt(),
     check('search').optional().isString(),
     check('status').optional().isIn(['draft', 'in_progress', 'in_review', 'approved']),
     check('category').optional().isIn(['web', 'mobile', 'tablet', 'desktop']),

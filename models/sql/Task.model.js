@@ -27,11 +27,11 @@ const Task = sequelize.define('Task', {
     onUpdate: 'CASCADE'
   },
   status: {
-    type: DataTypes.ENUM('to_do', 'in_progress', 'in_review', 'done', 'blocked'),
-    defaultValue: 'to_do'
+    type: DataTypes.ENUM('todo', 'in_progress', 'in_review', 'done'),
+    defaultValue: 'todo'
   },
   priority: {
-    type: DataTypes.ENUM('low', 'medium', 'high', 'critical'),
+    type: DataTypes.ENUM('low', 'medium', 'high', 'urgent'),
     defaultValue: 'medium'
   },
   type: {
@@ -98,10 +98,6 @@ const Task = sequelize.define('Task', {
     type: DataTypes.JSON,
     defaultValue: []
   },
-  sprint: {
-    type: DataTypes.STRING(50),
-    allowNull: true
-  },
   phase: {
     type: DataTypes.ENUM('UI/UX', 'Development', 'Testing'),
     defaultValue: 'Development'
@@ -123,12 +119,12 @@ Task.associate = (models) => {
     foreignKey: 'projectId',
     as: 'project'
   });
-  
+
   Task.belongsTo(models.User, {
     foreignKey: 'assigneeId',
     as: 'assignee'
   });
-  
+
   Task.belongsTo(models.User, {
     foreignKey: 'reporterId',
     as: 'reporter'
