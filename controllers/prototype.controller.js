@@ -1,4 +1,4 @@
-const { Prototype, Project, User } = require('../models/sql');
+const { Prototype, Project, User, sequelize } = require('../models/sql');
 const { Op } = require('sequelize');
 const fs = require('fs');
 const path = require('path');
@@ -16,10 +16,10 @@ const saveFile = (file) => {
     const fileExt = path.extname(file.originalname);
     const fileName = `${uuidv4()}${fileExt}`;
     const filePath = path.join(UPLOAD_DIR, fileName);
-    
+
     // Move file from temp to uploads directory
     fs.renameSync(file.path, filePath);
-    
+
     // Return relative path
     return `/uploads/prototypes/${fileName}`;
   } catch (error) {
@@ -100,13 +100,18 @@ const createPrototype = async (req, res) => {
 const getPrototypes = async (req, res) => {
   try {
     const { projectId, search, status, category } = req.query;
-    const where = { projectId };
+    const where = {};
+
+    // Only add projectId to where clause if it's provided
+    if (projectId) {
+      where.projectId = projectId;
+    }
 
     // Add search filter
     if (search) {
       where[Op.or] = [
-        { title: { [Op.iLike]: `%${search}%` } },
-        { description: { [Op.iLike]: `%${search}%` } },
+        { title: { [Op.like]: `%${search}%` } },
+        { description: { [Op.like]: `%${search}%` } },
       ];
     }
 
@@ -194,7 +199,7 @@ const updatePrototype = async (req, res) => {
     }
 
     let imageUrl = prototype.imageUrl;
-    
+
     // Handle file upload if a new file is provided
     if (req.file) {
       // Delete old file if it exists
@@ -282,21 +287,21 @@ const getPrototypeStats = async (req, res) => {
   try {
     const { projectId } = req.query;
     const where = {};
-    
+
     if (projectId) {
       where.projectId = projectId;
     }
 
     const total = await Prototype.count({ where });
     const byStatus = await Prototype.findAll({
-      attributes: ['status', [Prototype.sequelize.fn('COUNT', Prototype.sequelize.col('id')), 'count']],
+      attributes: ['status', [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
       where,
       group: ['status'],
       raw: true,
     });
 
     const byCategory = await Prototype.findAll({
-      attributes: ['category', [Prototype.sequelize.fn('COUNT', Prototype.sequelize.col('id')), 'count']],
+      attributes: ['category', [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
       where,
       group: ['category'],
       raw: true,

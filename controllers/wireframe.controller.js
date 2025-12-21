@@ -1,4 +1,4 @@
-const { Wireframe, User } = require('../models/sql');
+const { Wireframe, Project, User, sequelize } = require('../models/sql');
 const { Op } = require('sequelize');
 const fs = require('fs');
 const path = require('path');
@@ -14,14 +14,14 @@ if (!fs.existsSync(UPLOAD_DIR)) {
 const saveFile = (file) => {
   try {
     const fileExt = path.extname(file.originalname);
-    const fileName = `${uuidv4()}${fileExt}`;
+    const fileName = `${uuidv4()}${fileExt} `;
     const filePath = path.join(UPLOAD_DIR, fileName);
-    
+
     // Move file from temp to uploads directory
     fs.renameSync(file.path, filePath);
-    
+
     // Return relative path
-    return `/uploads/wireframes/${fileName}`;
+    return `/ uploads / wireframes / ${fileName} `;
   } catch (error) {
     console.error('Error saving file:', error);
     throw new Error('Failed to save file');
@@ -50,22 +50,22 @@ exports.createWireframe = async (req, res) => {
   try {
     console.log('Request body:', req.body);
     console.log('Request file:', req.file);
-    
+
     const { title, description, version, status, category, projectId } = req.body;
     const userId = req.user?.id; // Using optional chaining in case user is not set
 
     // Basic validation
     if (!title) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        error: 'Title is required' 
+        error: 'Title is required'
       });
     }
 
     if (!projectId) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        error: 'Project ID is required' 
+        error: 'Project ID is required'
       });
     }
 
@@ -77,7 +77,7 @@ exports.createWireframe = async (req, res) => {
         imageUrl = saveFile(req.file);
       } catch (fileError) {
         console.error('Error saving file:', fileError);
-        return res.status(400).json({ 
+        return res.status(400).json({
           success: false,
           error: 'Failed to save the uploaded file',
           details: process.env.NODE_ENV === 'development' ? fileError.message : undefined
@@ -109,14 +109,14 @@ exports.createWireframe = async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating wireframe:', error);
-    
+
     // Handle Sequelize validation errors
     if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
       const errors = error.errors.map(err => ({
         field: err.path,
         message: err.message
       }));
-      
+
       return res.status(400).json({
         success: false,
         error: 'Validation error',
@@ -137,7 +137,7 @@ exports.getWireframes = async (req, res) => {
   try {
     const { projectId, search, status, category } = req.query;
     const where = {};
-    
+
     // Only add projectId to where clause if it's provided
     if (projectId) {
       where.projectId = projectId;
@@ -146,8 +146,8 @@ exports.getWireframes = async (req, res) => {
     // Add search filter
     if (search) {
       where[Op.or] = [
-        { title: { [Op.iLike]: `%${search}%` } },
-        { description: { [Op.iLike]: `%${search}%` } },
+        { title: { [Op.like]: `% ${search}% ` } },
+        { description: { [Op.like]: `% ${search}% ` } },
       ];
     }
 

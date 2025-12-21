@@ -1,6 +1,20 @@
 const { sequelize } = require('../config/database');
 const { logActivity } = require('../utils/activity.utils');
 
+const stageNameMapping = {
+    'ui_ux': 'UI/UX Design',
+    'development': 'Development',
+    'testing': 'Testing',
+    'completed': 'Completed'
+};
+
+const reverseStageNameMapping = {
+    'UI/UX Design': 'ui_ux',
+    'Development': 'development',
+    'Testing': 'testing',
+    'Completed': 'completed'
+};
+
 // @desc    Get all stage transitions for a project
 // @route   GET /api/projects/:projectId/stage-transitions
 // @access  Private
@@ -82,14 +96,15 @@ exports.transitionStage = async (req, res) => {
             });
         }
 
-        const currentStage = project[0].currentStage;
+        const currentStageCode = project[0].currentStage;
+        const currentStageName = stageNameMapping[currentStageCode] || currentStageCode;
 
         // Get stage IDs
         const [fromStage] = await sequelize.query(`
       SELECT id FROM project_stages 
       WHERE "projectId" = :projectId AND "stageName" = :stageName
     `, {
-            replacements: { projectId, stageName: currentStage },
+            replacements: { projectId, stageName: currentStageName },
             type: sequelize.QueryTypes.SELECT,
             transaction
         });
@@ -111,6 +126,8 @@ exports.transitionStage = async (req, res) => {
             });
         }
 
+        const toStageCode = reverseStageNameMapping[toStage] || toStage.toLowerCase();
+
         // Create transition record
         const [transitionResult] = await sequelize.query(`
       INSERT INTO stage_transitions (
@@ -125,7 +142,7 @@ exports.transitionStage = async (req, res) => {
     `, {
             replacements: {
                 projectId,
-                fromStage: currentStage,
+                fromStage: currentStageName,
                 toStage,
                 fromStageId: fromStage.length > 0 ? fromStage[0].id : null,
                 toStageId: toStageData[0].id,
@@ -146,7 +163,7 @@ exports.transitionStage = async (req, res) => {
       SET "currentStage" = :toStage, "updatedAt" = CURRENT_TIMESTAMP
       WHERE id = :projectId
     `, {
-            replacements: { projectId, toStage },
+            replacements: { projectId, toStage: toStageCode },
             type: sequelize.QueryTypes.UPDATE,
             transaction
         });
@@ -220,7 +237,7 @@ exports.transitionStage = async (req, res) => {
             userId: req.user.id,
             projectId: parseInt(projectId),
             type: 'stage_transition',
-            description: `Project transitioned from ${currentStage} to ${toStage}`
+            description: `Project transitioned from ${currentStageName} to ${toStage}`
         });
 
         await transaction.commit();
@@ -230,7 +247,7 @@ exports.transitionStage = async (req, res) => {
             message: `Successfully transitioned to ${toStage} stage`,
             data: {
                 transitionId: transitionResult[0][0].id,
-                fromStage: currentStage,
+                fromStage: currentStageName,
                 toStage,
                 transitionedAt: new Date()
             }
@@ -308,7 +325,8 @@ exports.canTransitionStage = async (req, res) => {
             });
         }
 
-        const currentStage = project[0].currentStage;
+        const currentStageCode = project[0].currentStage;
+        const currentStageName = stageNameMapping[currentStageCode] || currentStageCode;
 
         // Get current stage details
         const [stageDetails] = await sequelize.query(`
@@ -321,7 +339,7 @@ exports.canTransitionStage = async (req, res) => {
       WHERE ps."projectId" = :projectId AND ps."stageName" = :stageName
       GROUP BY ps.id
     `, {
-            replacements: { projectId, stageName: currentStage },
+            replacements: { projectId, stageName: currentStageName },
             type: sequelize.QueryTypes.SELECT
         });
 

@@ -44,7 +44,7 @@ const Prototype = sequelize.define('Prototype', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Projects',
+      model: 'projects',
       key: 'id',
     },
     onDelete: 'CASCADE',
@@ -53,7 +53,7 @@ const Prototype = sequelize.define('Prototype', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Users',
+      model: 'users',
       key: 'id',
     },
   },
@@ -61,11 +61,13 @@ const Prototype = sequelize.define('Prototype', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Users',
+      model: 'users',
       key: 'id',
     },
   },
 }, {
+  tableName: 'prototypes', // Explicitly set table name
+  underscored: true, // Convert camelCase to snake_case
   timestamps: true,
   paranoid: true,
   defaultScope: {
@@ -79,17 +81,17 @@ Prototype.associate = (models) => {
     foreignKey: 'projectId',
     as: 'project',
   });
-  
+
   Prototype.belongsTo(models.User, {
     foreignKey: 'createdBy',
     as: 'creator',
   });
-  
+
   Prototype.belongsTo(models.User, {
     foreignKey: 'updatedBy',
     as: 'updater',
   });
-  
+
   // Add hook to update updatedAt when prototype is updated
   Prototype.addHook('beforeUpdate', async (prototype) => {
     prototype.updatedAt = new Date();

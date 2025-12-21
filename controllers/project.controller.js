@@ -1,4 +1,4 @@
-const { Project, Task, User, Client } = require('../models/sql');
+const { Project, Task, User, Client, sequelize } = require('../models/sql');
 const { Op } = require('sequelize');
 const { logActivity } = require('../utils/activity.utils');
 
@@ -128,7 +128,7 @@ exports.createProject = async (req, res) => {
       clientId,
       status = 'Planning',
       priority = 'Medium',
-      currentPhase = 'Planning',
+      currentPhase = 'UI/UX Design',
       startDate,
       endDate,
       budget,
@@ -152,13 +152,14 @@ exports.createProject = async (req, res) => {
       status,
       priority,
       currentPhase,
+      currentStage: 'ui_ux', // Set initial stage to match auto-created stages (mapped)
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       budget: budget || { estimated: 0, actual: 0, currency: 'USD' },
       projectManagerId,
       progress: 0,
       phases: {
-        uiux: { status: 'Not Started', progress: 0 },
+        uiux: { status: 'In Progress', progress: 0 }, // First stage starts as in progress
         development: { status: 'Not Started', progress: 0 },
         testing: { status: 'Not Started', progress: 0 }
       },
@@ -175,6 +176,22 @@ exports.createProject = async (req, res) => {
     // if (teamMemberIds.length > 0) {
     //   await project.setTeamMembers(teamMemberIds);
     // }
+
+    // Update the first stage to 'in_progress' to match currentStage
+    // The trigger creates stages with 'not_started'
+    try {
+      await sequelize.query(`
+        UPDATE project_stages 
+        SET status = 'in_progress', "updatedAt" = CURRENT_TIMESTAMP
+        WHERE "projectId" = :projectId AND "stageName" = 'UI/UX Design'
+      `, {
+        replacements: { projectId: project.id },
+        type: sequelize.QueryTypes.UPDATE
+      });
+    } catch (err) {
+      console.error('Error updating initial stage status:', err);
+      // Continue even if this fails, as the project is created
+    }
 
     // Log activity
     await logActivity({

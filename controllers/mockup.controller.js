@@ -1,4 +1,4 @@
-const { Mockup, Project, User } = require('../models/sql');
+const { Mockup, Project, User, sequelize } = require('../models/sql');
 const { Op } = require('sequelize');
 const { logActivity } = require('../utils/activity.utils');
 const fs = require('fs');
@@ -17,10 +17,10 @@ const saveFile = (file) => {
     const fileExt = path.extname(file.originalname);
     const fileName = `${uuidv4()}${fileExt}`;
     const filePath = path.join(UPLOAD_DIR, fileName);
-    
+
     // Move file from temp to uploads directory
     fs.renameSync(file.path, filePath);
-    
+
     // Return relative path
     return `/uploads/mockups/${fileName}`;
   } catch (error) {
@@ -53,9 +53,9 @@ exports.createMockup = async (req, res) => {
   try {
     console.log('Request body:', req.body);
     console.log('Request file:', req.file);
-    
+
     const { title, description, projectId, category } = req.body;
-    
+
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -122,12 +122,12 @@ exports.getMockups = async (req, res) => {
   try {
     const { projectId, status, search, page = 1, limit = 10 } = req.query;
     const offset = (page - 1) * limit;
-    
+
     const where = {};
-    
+
     if (projectId) where.projectId = projectId;
     if (status) where.status = status;
-    
+
     if (search) {
       where[Op.or] = [
         { title: { [Op.like]: `%${search}%` } },
@@ -225,7 +225,7 @@ exports.updateMockup = async (req, res) => {
     const updateData = {};
     if (title) updateData.title = title;
     if (description) updateData.description = description;
-    
+
     // Handle file upload if included
     if (req.file) {
       // Delete old file
@@ -331,7 +331,7 @@ exports.deleteMockup = async (req, res) => {
 exports.getMockupStats = async (req, res) => {
   try {
     const { projectId } = req.params;
-    
+
     const stats = await Mockup.findAll({
       attributes: [
         'status',

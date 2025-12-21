@@ -35,7 +35,7 @@ const Wireframe = sequelize.define('Wireframe', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Projects',
+      model: 'projects',
       key: 'id',
     },
     onDelete: 'CASCADE',
@@ -44,7 +44,7 @@ const Wireframe = sequelize.define('Wireframe', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Users',
+      model: 'users',
       key: 'id',
     },
   },
@@ -52,11 +52,13 @@ const Wireframe = sequelize.define('Wireframe', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Users',
+      model: 'users',
       key: 'id',
     },
   },
 }, {
+  tableName: 'wireframes', // Explicitly set table name
+  underscored: true, // Convert camelCase to snake_case
   timestamps: true,
   paranoid: true, // Enable soft delete
 });
@@ -67,12 +69,12 @@ Wireframe.associate = (models) => {
     foreignKey: 'projectId',
     as: 'project',
   });
-  
+
   Wireframe.belongsTo(models.User, {
     foreignKey: 'createdBy',
     as: 'creator',
   });
-  
+
   Wireframe.belongsTo(models.User, {
     foreignKey: 'updatedBy',
     as: 'updater',

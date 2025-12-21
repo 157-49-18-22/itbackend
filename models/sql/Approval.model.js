@@ -10,7 +10,7 @@ const Approval = sequelize.define('Approval', {
   approvalId: {
     type: DataTypes.STRING(50),
     unique: true,
-    allowNull: false
+    allowNull: true
   },
   type: {
     type: DataTypes.ENUM('Deliverable', 'Stage Transition', 'Bug Fix', 'Design', 'Code Review'),
