@@ -89,17 +89,17 @@ TestCase.associate = (models) => {
     foreignKey: 'projectId',
     as: 'project'
   });
-  
+
   TestCase.belongsTo(models.User, {
     foreignKey: 'createdBy',
     as: 'creator'
   });
-  
+
   TestCase.belongsTo(models.User, {
     foreignKey: 'assignedTo',
     as: 'assignee'
   });
-  
+
   TestCase.hasMany(models.TestResult, {
     foreignKey: 'testCaseId',
     as: 'testResults'

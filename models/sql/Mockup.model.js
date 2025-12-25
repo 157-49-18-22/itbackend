@@ -91,21 +91,21 @@ const Mockup = sequelize.define('Mockup', {
 });
 
 // Define associations after the model is defined
-Mockup.associate = function(models) {
+Mockup.associate = function (models) {
   // Project association
   Mockup.belongsTo(models.Project, {
     foreignKey: 'project_id',
     as: 'project',
     onDelete: 'CASCADE'
   });
-  
+
   // Creator association
   Mockup.belongsTo(models.User, {
     foreignKey: 'created_by',
     as: 'creator',
     onDelete: 'SET NULL'
   });
-  
+
   // Approver association
   Mockup.belongsTo(models.User, {
     foreignKey: 'approved_by',

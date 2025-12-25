@@ -15,14 +15,14 @@ router.use(protect);
 // Routes for /api/test-cases/:testCaseId/results
 router
   .route('/')
-  .get(authorize('user', 'admin'), getTestResults)
-  .post(authorize('user', 'admin'), createTestResult);
+  .get(authorize('Tester', 'Developer', 'Project Manager', 'Admin', 'user', 'admin'), getTestResults)
+  .post(authorize('Tester', 'Developer', 'Project Manager', 'Admin', 'user', 'admin'), createTestResult);
 
 // Routes for /api/test-results/:id
 router
   .route('/:id')
-  .get(authorize('user', 'admin'), getTestResult)
-  .put(authorize('user', 'admin'), updateTestResult)
-  .delete(authorize('user', 'admin'), deleteTestResult);
+  .get(authorize('Tester', 'Developer', 'Project Manager', 'Admin', 'user', 'admin'), getTestResult)
+  .put(authorize('Tester', 'Developer', 'Project Manager', 'Admin', 'user', 'admin'), updateTestResult)
+  .delete(authorize('Tester', 'Developer', 'Project Manager', 'Admin', 'user', 'admin'), deleteTestResult);
 
 module.exports = router;

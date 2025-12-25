@@ -94,12 +94,12 @@ CodeFile.associate = (models) => {
     foreignKey: 'projectId',
     as: 'project'
   });
-  
+
   CodeFile.belongsTo(models.User, {
     foreignKey: 'createdBy',
     as: 'creator'
   });
-  
+
   CodeFile.belongsTo(models.User, {
     foreignKey: 'updatedBy',
     as: 'updater'

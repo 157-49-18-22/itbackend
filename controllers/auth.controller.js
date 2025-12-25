@@ -113,17 +113,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Check for tester role restrictions
-    if (user.role && user.role.toLowerCase() === 'tester') {
-      if (email.toLowerCase() !== 'tester@gmail.com') {
-        console.log('❌ Tester restriction applied');
-        return res.status(401).json({
-          success: false,
-          message: 'Access restricted for tester role. Please use the designated tester account.'
-        });
-      }
-    }
-
     // Update last login
     console.log('🔄 Updating last login...');
     await User.update(

@@ -62,8 +62,8 @@ const Sprint = sequelize.define('Sprint', {
 }, {
   tableName: 'sprints',
   timestamps: true,
+  underscored: false, // Table uses camelCase columns
   indexes: [
-    { fields: ['projectId'] },
     { fields: ['status'] },
     { fields: ['startDate'] },
     { fields: ['endDate'] }

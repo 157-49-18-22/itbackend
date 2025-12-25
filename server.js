@@ -54,6 +54,8 @@ const stageTransitionRoutes = require('./routes/stageTransition.routes');
 const deploymentRoutes = require('./routes/deployment.routes');
 const testCaseRoutes = require('./routes/testCase.routes');
 const uiuxRoutes = require('./routes/uiux.routes');
+const blockerRoutes = require('./routes/blocker.routes');
+const feedbackRoutes = require('./routes/feedback.routes');
 
 // ENHANCED Routes (New Features)
 const projectStagesRoutes = require('./routes/projectStages.routes');
@@ -162,6 +164,8 @@ app.use('/api/stage-transitions', stageTransitionRoutes);
 app.use('/api/deployments', deploymentRoutes);
 app.use('/api/test-cases', testCaseRoutes);
 app.use('/api/uiux', uiuxRoutes);
+app.use('/api/blockers', blockerRoutes);
+app.use('/api/feedbacks', feedbackRoutes);
 
 // ENHANCED API Routes (New Features)
 app.use('/api/dashboard', dashboardRoutes);

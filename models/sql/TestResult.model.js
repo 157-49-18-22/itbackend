@@ -51,7 +51,7 @@ TestResult.associate = (models) => {
     foreignKey: 'testCaseId',
     as: 'testCase'
   });
-  
+
   TestResult.belongsTo(models.User, {
     foreignKey: 'executedBy',
     as: 'executor'

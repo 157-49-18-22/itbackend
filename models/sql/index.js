@@ -25,6 +25,10 @@ const Deployment = require('../deployment.model');
 const Bug = require('./Bug.model');
 const BugComment = require('./BugComment.model');
 const UAT = require('./UAT.model');
+const TestCase = require('./TestCase.model');
+const TestResult = require('./TestResult.model');
+const Blocker = require('./Blocker.model');
+const Feedback = require('./Feedback.model');
 
 // Define relationships
 
@@ -60,6 +64,8 @@ User.hasMany(Mockup, { foreignKey: 'approvedBy', as: 'approvedMockups' });
 User.hasMany(CodeFile, { foreignKey: 'createdBy', as: 'createdCodeFiles' });
 User.hasMany(CodeFile, { foreignKey: 'updatedBy', as: 'updatedCodeFiles' });
 User.hasMany(Deployment, { foreignKey: 'deployedBy', as: 'deployments' });
+User.hasMany(TestCase, { foreignKey: 'createdBy', as: 'createdTestCases' });
+User.hasMany(TestCase, { foreignKey: 'assignedTo', as: 'assignedTestCases' });
 
 Project.hasMany(CodeFile, { foreignKey: 'projectId', as: 'codeFiles' });
 
@@ -164,10 +170,28 @@ Bug.belongsTo(Project, { foreignKey: 'project_id', as: 'project' });
 Bug.belongsTo(User, { foreignKey: 'reported_by', as: 'reportedBy' });
 Bug.belongsTo(User, { foreignKey: 'assigned_to', as: 'assignedTo' });
 // Note: Project.hasMany(Bug) is already defined above, no need to define it again
+Project.hasMany(TestCase, { foreignKey: 'projectId', as: 'testCases' });
 
 // BugComment relationships
 // Note: BugComment.belongsTo(Bug) is defined in BugComment.model.js
 BugComment.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
+// Blocker relationships
+Blocker.belongsTo(Project, { foreignKey: 'projectId', as: 'project' });
+Blocker.belongsTo(Task, { foreignKey: 'taskId', as: 'task' });
+Blocker.belongsTo(User, { foreignKey: 'reportedBy', as: 'reporter' });
+Blocker.belongsTo(User, { foreignKey: 'resolvedBy', as: 'resolver' });
+Project.hasMany(Blocker, { foreignKey: 'projectId', as: 'blockers' });
+User.hasMany(Blocker, { foreignKey: 'reportedBy', as: 'reportedBlockers' });
+
+// Feedback relationships
+Feedback.belongsTo(Project, { foreignKey: 'projectId', as: 'project' });
+Feedback.belongsTo(Task, { foreignKey: 'taskId', as: 'task' });
+Feedback.belongsTo(User, { foreignKey: 'reviewerId', as: 'reviewer' });
+Feedback.belongsTo(User, { foreignKey: 'developerId', as: 'developer' });
+Project.hasMany(Feedback, { foreignKey: 'projectId', as: 'feedbacks' });
+User.hasMany(Feedback, { foreignKey: 'reviewerId', as: 'givenFeedbacks' });
+User.hasMany(Feedback, { foreignKey: 'developerId', as: 'receivedFeedbacks' });
 
 // Initialize models object
 const models = {
@@ -194,7 +218,11 @@ const models = {
   Deployment,
   Bug,
   BugComment,
-  UAT
+  UAT,
+  TestCase,
+  TestResult,
+  Blocker,
+  Feedback
 };
 
 // Run associations for each model

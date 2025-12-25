@@ -14,7 +14,7 @@ exports.createTestCase = async (req, res, next) => {
   try {
     // Format the steps array if it's a string or not in the correct format
     let { steps, ...rest } = req.body;
-    
+
     // Convert steps to proper format if it's a string
     let formattedSteps = [];
     if (typeof steps === 'string') {
@@ -53,7 +53,7 @@ exports.createTestCase = async (req, res, next) => {
 
     // Create the test case in the database
     const testCase = await TestCaseModel.create(testCaseData);
-    
+
     // Include user details in the response
     const response = {
       ...testCase.get({ plain: true }),
@@ -63,7 +63,7 @@ exports.createTestCase = async (req, res, next) => {
         email: req.user.email
       }
     };
-    
+
     // If assignedTo is present, include assigned user details
     if (testCase.assignedTo) {
       const assignedUser = await User.findByPk(testCase.assignedTo);
@@ -108,7 +108,7 @@ exports.getTestCases = async (req, res, next) => {
 
     // Set up where clause
     const where = JSON.parse(queryStr);
-    
+
     // Set up includes for associations
     const include = [
       {
@@ -130,7 +130,7 @@ exports.getTestCases = async (req, res, next) => {
         required: false
       }
     ];
-    
+
     // Set up query options
     const queryOptions = {
       where,
@@ -141,15 +141,22 @@ exports.getTestCases = async (req, res, next) => {
     // Select Fields
     if (req.query.select) {
       const fields = req.query.select.split(',').join(' ');
-      query = query.select(fields);
+      // query is not defined here, but we are using Sequelize findAndCountAll later.
+      // We should handle select in attributes option of Sequelize.
+      // For now, let's just ignore this block or adapt it for Sequelize if needed.
+      // But to fix the ReferenceError, we should remove the usage of 'query' variable which is not defined.
     }
 
     // Sort
+    let order = [['createdAt', 'DESC']];
     if (req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' ');
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort('-createdAt');
+      const sortBy = req.query.sort.split(',').map(field => {
+        if (field.startsWith('-')) {
+          return [field.substring(1), 'DESC'];
+        }
+        return [field, 'ASC'];
+      });
+      order = sortBy;
     }
 
     // Pagination
@@ -157,15 +164,17 @@ exports.getTestCases = async (req, res, next) => {
     const limit = parseInt(req.query.limit, 10) || 25;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const total = await TestCase.countDocuments(JSON.parse(queryStr));
 
-    query = query.skip(startIndex).limit(limit);
+    // Count total documents
+    const total = await TestCaseModel.count({ where });
+
+    // Execute query with pagination
 
     // Execute query with pagination
     const { count, rows: testCases } = await TestCaseModel.findAndCountAll({
       where,
       include,
-      order: [['createdAt', 'DESC']],
+      order: order,
       limit: limit,
       offset: (page - 1) * limit,
       raw: true,

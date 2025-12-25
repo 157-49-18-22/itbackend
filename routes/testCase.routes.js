@@ -22,19 +22,19 @@ router.use(protect);
 // Routes for /api/test-cases
 router
   .route('/')
-  .get(authorize('user', 'admin'), getTestCases)
-  .post(authorize('user', 'admin'), createTestCase);
+  .get(authorize('Tester', 'Developer', 'Project Manager', 'Admin', 'user', 'admin'), getTestCases)
+  .post(authorize('Tester', 'Developer', 'Project Manager', 'Admin', 'user', 'admin'), createTestCase);
 
 // Routes for /api/test-cases/:id
 router
   .route('/:id')
-  .get(authorize('user', 'admin'), getTestCase)
-  .put(authorize('user', 'admin'), updateTestCase)
-  .delete(authorize('user', 'admin'), deleteTestCase);
+  .get(authorize('Tester', 'Developer', 'Project Manager', 'Admin', 'user', 'admin'), getTestCase)
+  .put(authorize('Tester', 'Developer', 'Project Manager', 'Admin', 'user', 'admin'), updateTestCase)
+  .delete(authorize('Tester', 'Developer', 'Project Manager', 'Admin', 'user', 'admin'), deleteTestCase);
 
 // Route for /api/test-cases/:id/results
 router
   .route('/:id/results')
-  .post(authorize('user', 'admin'), addTestResult);
+  .post(authorize('Tester', 'Developer', 'Project Manager', 'Admin', 'user', 'admin'), addTestResult);
 
 module.exports = router;
