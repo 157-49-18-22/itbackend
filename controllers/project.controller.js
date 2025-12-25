@@ -230,7 +230,12 @@ exports.updateProject = async (req, res) => {
     }
 
     // Check if user has permission to update
-    if (req.user.role !== 'admin' && req.user.id !== project.projectManagerId) {
+    // Allow Admin, Project Manager, Tester (for submitting to client), Developer (for submitting to testing)
+    const allowedRoles = ['Admin', 'Project Manager', 'Tester', 'Developer'];
+    const isProjectManager = req.user.id === project.projectManagerId;
+    const hasRole = allowedRoles.includes(req.user.role);
+
+    if (!hasRole && !isProjectManager) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to update this project'

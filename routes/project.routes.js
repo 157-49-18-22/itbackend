@@ -19,7 +19,7 @@ router.route('/')
 
 router.route('/:id')
   .get(getProject)
-  .put(authorize('Admin', 'Project Manager'), updateProject)
+  .put(authorize('Admin', 'Project Manager', 'Tester', 'Developer'), updateProject)
   .delete(authorize('Admin'), deleteProject);
 
 router.get('/:id/stats', getProjectStats);
