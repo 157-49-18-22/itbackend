@@ -36,7 +36,7 @@ const User = sequelize.define('User', {
     allowNull: true
   },
   department: {
-    type: DataTypes.ENUM('Development', 'Design', 'Marketing', 'Sales', 'Support', 'Management'),
+    type: DataTypes.STRING(50),
     defaultValue: 'Development'
   },
   designation: {
