@@ -166,6 +166,19 @@ app.use('/api/test-cases', testCaseRoutes);
 app.use('/api/uiux', uiuxRoutes);
 app.use('/api/blockers', blockerRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
+app.use('/api/environment', require('./routes/environment.routes'));
+app.use('/api/coding-standards', require('./routes/coding.routes'));
+app.use('/api/endpoints', require('./routes/endpoints.routes'));
+app.use('/api/database', require('./routes/database.routes'));
+app.use('/api/integrations', require('./routes/integrations.routes'));
+app.use('/api/testing', require('./routes/testing.routes'));
+app.use('/api/performance', require('./routes/performance.routes'));
+app.use('/api/selftesting', require('./routes/selftesting.routes'));
+app.use('/api/codereview', require('./routes/codeReview.routes'));
+app.use('/api/version-history', require('./routes/versionHistory.routes'));
+app.use('/api/discussions', require('./routes/discussions.routes'));
+app.use('/api/documentation', require('./routes/documentation.routes'));
+
 
 // ENHANCED API Routes (New Features)
 app.use('/api/dashboard', dashboardRoutes);

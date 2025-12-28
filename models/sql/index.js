@@ -29,6 +29,7 @@ const TestCase = require('./TestCase.model');
 const TestResult = require('./TestResult.model');
 const Blocker = require('./Blocker.model');
 const Feedback = require('./Feedback.model');
+const PerformanceTest = require('./PerformanceTest.model');
 
 // Define relationships
 
@@ -89,6 +90,7 @@ Project.hasMany(Wireframe, { foreignKey: 'projectId', as: 'wireframes' });
 // Mockup and Tasks associations are defined in Project.model.js
 Project.hasMany(CodeFile, { foreignKey: 'projectId', as: 'files' });
 Project.hasMany(Deployment, { foreignKey: 'projectId', as: 'deployments' });
+Project.hasMany(PerformanceTest, { foreignKey: 'projectId', as: 'performanceTests' });
 
 // Task relationships - defined in Task.model.js
 // Task.belongsTo(Project, { foreignKey: 'projectId', as: 'project' }); // Defined in Task.model.js
@@ -222,7 +224,8 @@ const models = {
   TestCase,
   TestResult,
   Blocker,
-  Feedback
+  Feedback,
+  PerformanceTest
 };
 
 // Run associations for each model

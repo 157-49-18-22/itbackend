@@ -1,21 +1,19 @@
-const { sequelize, Message } = require('./models/sql');
+const { sequelize, PerformanceTest } = require('./models/sql');
 
-const sync = async () => {
+async function syncModels() {
     try {
         await sequelize.authenticate();
-        console.log('Connection has been established successfully.');
+        console.log('Database connected.');
 
-        // Sync specifically the message model to add the missing column
-        // We use alter: true to update the table structure without dropping data
-        console.log('Syncing Message model...');
-        await Message.sync({ alter: true });
+        // Sync specifically the new model
+        await PerformanceTest.sync({ alter: true });
+        console.log('PerformanceTest table synced.');
 
-        console.log('Database synced successfully.');
     } catch (error) {
-        console.error('Unable to connect to the database:', error);
+        console.error('Error syncing DB:', error);
     } finally {
         await sequelize.close();
     }
-};
+}
 
-sync();
+syncModels();
