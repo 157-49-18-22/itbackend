@@ -21,6 +21,9 @@ router.get('/:id', bugController.getBugById);
 // Update a bug
 router.put('/:id', bugController.updateBug);
 
+// Update bug status
+router.patch('/:id/status', bugController.updateStatus);
+
 // Delete a bug
 router.delete('/:id', bugController.deleteBug);
 

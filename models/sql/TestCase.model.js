@@ -78,9 +78,7 @@ const TestCase = sequelize.define('TestCase', {
 }, {
   tableName: 'test_cases',
   timestamps: true,
-  underscored: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
+  underscored: true
 });
 
 // Define associations

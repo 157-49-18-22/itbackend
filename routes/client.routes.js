@@ -38,6 +38,20 @@ router.get('/', clientController.getAllClients);
 
 /**
  * @swagger
+ * /api/clients/dashboard:
+ *   get:
+ *     summary: Get client dashboard data
+ *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Client dashboard data
+ */
+router.get('/dashboard', clientController.getClientDashboard);
+
+/**
+ * @swagger
  * /api/clients/search:
  *   get:
  *     summary: Search clients

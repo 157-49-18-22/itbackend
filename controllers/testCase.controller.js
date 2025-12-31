@@ -1,6 +1,4 @@
-const TestCase = require('../models/sql/TestCase.model');
-const User = require('../models/sql/User.model');
-const Project = require('../models/sql/Project.model');
+const { TestCase, User, Project } = require('../models/sql');
 const { ErrorResponse } = require('../utils/errorResponse');
 const { Op } = require('sequelize');
 
@@ -139,13 +137,7 @@ exports.getTestCases = async (req, res, next) => {
     };
 
     // Select Fields
-    if (req.query.select) {
-      const fields = req.query.select.split(',').join(' ');
-      // query is not defined here, but we are using Sequelize findAndCountAll later.
-      // We should handle select in attributes option of Sequelize.
-      // For now, let's just ignore this block or adapt it for Sequelize if needed.
-      // But to fix the ReferenceError, we should remove the usage of 'query' variable which is not defined.
-    }
+
 
     // Sort
     let order = [['createdAt', 'DESC']];
@@ -176,9 +168,7 @@ exports.getTestCases = async (req, res, next) => {
       include,
       order: order,
       limit: limit,
-      offset: (page - 1) * limit,
-      raw: true,
-      nest: true
+      offset: (page - 1) * limit
     });
 
     // Calculate pagination
