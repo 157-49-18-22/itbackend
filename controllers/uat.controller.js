@@ -5,15 +5,15 @@ const { Op } = require('sequelize');
 // Create a new UAT test case
 exports.createUAT = async (req, res) => {
   try {
-    const { title, description, steps, status, priority, tester, projectId } = req.body;
-    
+    const { title, description, steps, testSteps, status, priority, tester, testerName, projectId } = req.body;
+
     const uat = await UAT.create({
       title,
       description,
-      steps: Array.isArray(steps) ? steps.filter(step => step.trim() !== '') : [],
+      steps: Array.isArray(steps || testSteps) ? (steps || testSteps).filter(step => step.trim() !== '') : [],
       status: status || 'pending',
       priority: priority || 'medium',
-      tester: tester || null,
+      tester: tester || testerName || null,
       projectId: projectId || null,
       createdBy: req.user.id
     });
@@ -104,7 +104,7 @@ exports.getAllUATs = async (req, res) => {
 exports.getUATById = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const uat = await UAT.findByPk(id, {
       include: [
         {
@@ -145,7 +145,7 @@ exports.getUATById = async (req, res) => {
 exports.updateUAT = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, steps, status, priority, tester, projectId } = req.body;
+    const { title, description, steps, testSteps, status, priority, tester, testerName, projectId } = req.body;
 
     const uat = await UAT.findByPk(id);
 
@@ -159,10 +159,10 @@ exports.updateUAT = async (req, res) => {
     // Update fields if they are provided in the request
     if (title) uat.title = title;
     if (description) uat.description = description;
-    if (steps) uat.steps = Array.isArray(steps) ? steps.filter(step => step.trim() !== '') : [];
+    if (steps || testSteps) uat.steps = Array.isArray(steps || testSteps) ? (steps || testSteps).filter(step => step.trim() !== '') : [];
     if (status) uat.status = status;
     if (priority) uat.priority = priority;
-    if (tester !== undefined) uat.tester = tester;
+    if (tester !== undefined || testerName !== undefined) uat.tester = tester || testerName;
     if (projectId !== undefined) uat.projectId = projectId;
 
     await uat.save();
