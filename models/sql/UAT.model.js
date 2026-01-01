@@ -13,7 +13,7 @@ const UAT = sequelize.define('UAT', {
   },
   description: {
     type: DataTypes.TEXT,
-    allowNull: true
+    allowNull: false
   },
   steps: {
     type: DataTypes.JSON,
@@ -31,6 +31,10 @@ const UAT = sequelize.define('UAT', {
   tester: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  commentsCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
   },
   projectId: {
     type: DataTypes.INTEGER,
@@ -69,7 +73,7 @@ UAT.associate = (models) => {
     foreignKey: 'createdBy',
     as: 'creator'
   });
-  
+
   UAT.belongsTo(models.Project, {
     foreignKey: 'projectId',
     as: 'project'

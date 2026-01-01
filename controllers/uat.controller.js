@@ -9,7 +9,7 @@ exports.createUAT = async (req, res) => {
 
     const uat = await UAT.create({
       title,
-      description,
+      description: description || '',
       steps: Array.isArray(steps || testSteps) ? (steps || testSteps).filter(step => step.trim() !== '') : [],
       status: status || 'pending',
       priority: priority || 'medium',
