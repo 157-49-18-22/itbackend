@@ -92,7 +92,7 @@ router.post('/', async (req, res) => {
 
     res.status(500).json({
       success: false,
-      message: 'Failed to create deliverable. Please try again.'
+      message: `Failed to create deliverable: ${error.message}`
     });
   }
 });

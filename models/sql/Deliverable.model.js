@@ -41,7 +41,8 @@ const Deliverable = sequelize.define('Deliverable', {
   },
   fileName: {
     type: DataTypes.STRING(255),
-    allowNull: false
+    allowNull: false,
+    field: 'filename'
   },
   fileSize: {
     type: DataTypes.BIGINT,
