@@ -52,12 +52,16 @@ const User = sequelize.define('User', {
     defaultValue: DataTypes.NOW
   },
   skills: {
-    type: DataTypes.TEXT, // Changed from JSON to TEXT for safety
+    type: DataTypes.TEXT,
     defaultValue: '[]',
     get() {
       try {
         const rawValue = this.getDataValue('skills');
-        return rawValue ? JSON.parse(rawValue) : [];
+        if (typeof rawValue === 'string') {
+          return JSON.parse(rawValue);
+        }
+        // If it's already an object (DB is JSON) or null
+        return rawValue || [];
       } catch (e) {
         return [];
       }
@@ -71,12 +75,15 @@ const User = sequelize.define('User', {
     allowNull: true
   },
   socialLinks: {
-    type: DataTypes.TEXT, // Changed from JSON to TEXT for safety
+    type: DataTypes.TEXT,
     defaultValue: '{}',
     get() {
       try {
         const rawValue = this.getDataValue('socialLinks');
-        return rawValue ? JSON.parse(rawValue) : {};
+        if (typeof rawValue === 'string') {
+          return JSON.parse(rawValue);
+        }
+        return rawValue || {};
       } catch (e) {
         return {};
       }
@@ -86,12 +93,15 @@ const User = sequelize.define('User', {
     }
   },
   preferences: {
-    type: DataTypes.TEXT, // Changed from JSON to TEXT for safety
+    type: DataTypes.TEXT,
     defaultValue: '{"emailNotifications":true,"pushNotifications":true,"theme":"light"}',
     get() {
       try {
         const rawValue = this.getDataValue('preferences');
-        return rawValue ? JSON.parse(rawValue) : {
+        if (typeof rawValue === 'string') {
+          return JSON.parse(rawValue);
+        }
+        return rawValue || {
           emailNotifications: true,
           pushNotifications: true,
           theme: 'light'
