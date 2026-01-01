@@ -55,11 +55,10 @@ exports.login = async (req, res) => {
     console.log('🔍 Finding user with email:', email);
 
     // Check for user (Sequelize doesn't hide password by default, we handle it in model)
-    // Check for user
-    // IMPORTANT: removed raw: true to verify password with instance method
     const user = await User.findOne({
       where: { email },
-      attributes: { include: ['password'] }
+      attributes: { include: ['password'] },
+      raw: true // Get plain object instead of model instance
     });
 
     console.log('👤 User found result:', user ? 'Found' : 'Not Found');
@@ -72,19 +71,22 @@ exports.login = async (req, res) => {
       });
     }
 
-    // console.log('🔑 User ID:', user.id); // Debug log
+    console.log('🔑 User ID:', user.id);
+    console.log('🔑 Stored Password:', user.password);
+    console.log('🔑 Provided Password:', password);
 
-    if (!user) {
-      console.log('❌ User not found in DB');
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials: User not found'
-      });
+    // Create a temporary user object with the comparePassword method
+    console.log('🔄 Fetching user instance for method access...');
+    const userInstance = await User.findByPk(user.id);
+
+    if (!userInstance) {
+      console.log('❌ Failed to fetch user instance');
+      throw new Error('User instance could not be fetched');
     }
 
     console.log('🔄 Comparing passwords...');
-    // Check if password matches using the instance method directly
-    let isMatch = await user.comparePassword(password);
+    // Check if password matches
+    let isMatch = await userInstance.comparePassword(password);
 
     // Fallback: If bcrypt fails, check plain text (for newly added users)
     if (!isMatch && user.password === password) {

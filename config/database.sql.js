@@ -63,10 +63,10 @@ const connectDB = async () => {
     console.log(`✅ ${dbType} Database Connected Successfully`);
 
     // Sync models in development (creates tables if they don't exist)
-    // Sync models (creates tables/columns if they don't exist)
-    // ENABLED GLOBALLY TEMPORARILY to ensure schema updates on Render
-    await sequelize.sync({ alter: true });
-    console.log('✅ Database tables synchronized (Alter enabled)');
+    if (process.env.NODE_ENV === 'development') {
+      await sequelize.sync({ alter: false }); // Set to true to auto-update schema
+      console.log('✅ Database tables synchronized');
+    }
   } catch (error) {
     console.error('❌ Database Connection Error:', error.message);
     console.error('Full error:', error);
@@ -78,4 +78,3 @@ const connectDB = async () => {
 };
 
 module.exports = { sequelize, connectDB };
-

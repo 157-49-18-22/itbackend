@@ -159,7 +159,6 @@ exports.getClientDashboard = async (req, res) => {
 exports.getAllClients = async (req, res) => {
   try {
     const { page = 1, limit = 10, status, search, sortBy = 'newest' } = req.query;
-    console.log('Fetching clients with query:', req.query); // Debug log
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     const whereClause = {};
@@ -196,9 +195,6 @@ exports.getAllClients = async (req, res) => {
       offset: offset,
       raw: true
     });
-
-    console.log(`Found ${count} clients in database.`); // Debug log
-    if (count > 0) console.log('First client sample:', clients[0]); // Debug log
 
     // Add a default logo if not present
     const clientsWithLogo = clients.map(client => ({

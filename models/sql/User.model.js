@@ -52,66 +52,23 @@ const User = sequelize.define('User', {
     defaultValue: DataTypes.NOW
   },
   skills: {
-    type: DataTypes.TEXT,
-    defaultValue: '[]',
-    get() {
-      try {
-        const rawValue = this.getDataValue('skills');
-        if (typeof rawValue === 'string') {
-          return JSON.parse(rawValue);
-        }
-        // If it's already an object (DB is JSON) or null
-        return rawValue || [];
-      } catch (e) {
-        return [];
-      }
-    },
-    set(value) {
-      this.setDataValue('skills', JSON.stringify(value));
-    }
+    type: DataTypes.JSON,
+    defaultValue: []
   },
   bio: {
     type: DataTypes.TEXT,
     allowNull: true
   },
   socialLinks: {
-    type: DataTypes.TEXT,
-    defaultValue: '{}',
-    get() {
-      try {
-        const rawValue = this.getDataValue('socialLinks');
-        if (typeof rawValue === 'string') {
-          return JSON.parse(rawValue);
-        }
-        return rawValue || {};
-      } catch (e) {
-        return {};
-      }
-    },
-    set(value) {
-      this.setDataValue('socialLinks', JSON.stringify(value));
-    }
+    type: DataTypes.JSON,
+    defaultValue: {}
   },
   preferences: {
-    type: DataTypes.TEXT,
-    defaultValue: '{"emailNotifications":true,"pushNotifications":true,"theme":"light"}',
-    get() {
-      try {
-        const rawValue = this.getDataValue('preferences');
-        if (typeof rawValue === 'string') {
-          return JSON.parse(rawValue);
-        }
-        return rawValue || {
-          emailNotifications: true,
-          pushNotifications: true,
-          theme: 'light'
-        };
-      } catch (e) {
-        return {};
-      }
-    },
-    set(value) {
-      this.setDataValue('preferences', JSON.stringify(value));
+    type: DataTypes.JSON,
+    defaultValue: {
+      emailNotifications: true,
+      pushNotifications: true,
+      theme: 'light'
     }
   },
   lastLogin: {
