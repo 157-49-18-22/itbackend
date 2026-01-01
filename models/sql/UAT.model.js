@@ -59,7 +59,7 @@ const UAT = sequelize.define('UAT', {
     defaultValue: DataTypes.NOW
   }
 }, {
-  tableName: 'UATs',
+  tableName: 'uats',
   timestamps: true
 });
 
