@@ -30,28 +30,42 @@ if (process.env.DATABASE_URL) {
     }
   });
 } else {
-  // Use individual credentials (for local development with MySQL)
+  // Use individual credentials (for local development or production without DATABASE_URL)
+  const dbConfig = {
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT) || 3306,
+    dialect: process.env.DB_DIALECT || 'mysql',
+    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    },
+    define: {
+      timestamps: true,
+      underscored: false,
+      freezeTableName: true
+    }
+  };
+
+  // Add SSL for PostgreSQL (Supabase)
+  if (process.env.DB_DIALECT === 'postgres') {
+    dbConfig.dialectOptions = {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    };
+    dbConfig.dialectModule = require('pg');
+    dbConfig.native = false;
+  }
+
   sequelize = new Sequelize(
     process.env.DB_NAME || 'it_agency_pms',
     process.env.DB_USER || 'root',
     process.env.DB_PASSWORD || '',
-    {
-      host: process.env.DB_HOST || 'localhost',
-      port: process.env.DB_PORT || 3306,
-      dialect: process.env.DB_DIALECT || 'mysql',
-      logging: process.env.NODE_ENV === 'development' ? console.log : false,
-      pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
-      },
-      define: {
-        timestamps: true,
-        underscored: false,
-        freezeTableName: true
-      }
-    }
+    dbConfig
   );
 }
 
