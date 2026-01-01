@@ -4,24 +4,8 @@ const { Sequelize } = require('sequelize');
 const basename = path.basename(__filename);
 const db = {};
 
-// Import database configuration
-const config = require('../config/config.json')[process.env.NODE_ENV || 'development'];
-
-// Initialize Sequelize
-const sequelize = new Sequelize(
-  config.database,
-  config.username,
-  config.password,
-  {
-    host: config.host,
-    dialect: config.dialect,
-    logging: config.logging || false,
-    define: {
-      timestamps: true,
-      underscored: true
-    }
-  }
-);
+// Import shared Sequelize instance
+const { sequelize } = require('../config/database');
 
 // Import the Deployment model first
 const Deployment = require('./deployment.model');
@@ -46,7 +30,7 @@ fs.readdirSync(modelDir)
     const modelPath = path.join(modelDir, file);
     const modelModule = require(modelPath);
     // Handle both module.exports = model and module.exports = (sequelize, DataTypes) => ...
-    const model = typeof modelModule === 'function' 
+    const model = typeof modelModule === 'function'
       ? modelModule(sequelize, Sequelize.DataTypes)
       : modelModule;
     db[model.name] = model;
@@ -72,7 +56,7 @@ if (db.Project && db.Deployment) {
     foreignKey: 'projectId',
     as: 'deployments'
   });
-  
+
   // A Deployment belongs to a Project
   db.Deployment.belongsTo(db.Project, {
     foreignKey: 'projectId',
@@ -86,7 +70,7 @@ if (db.User && db.Deployment) {
     foreignKey: 'deployedBy',
     as: 'deployments'
   });
-  
+
   // A Deployment belongs to a User (who deployed it)
   db.Deployment.belongsTo(db.User, {
     foreignKey: 'deployedBy',

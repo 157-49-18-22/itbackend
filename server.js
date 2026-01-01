@@ -80,7 +80,8 @@ app.use(cors({
       'http://localhost:3000',
       'http://127.0.0.1:5173',
       'http://localhost:5000',
-      'https://it-agency-gold.vercel.app'
+      'https://it-agency-gold.vercel.app',
+      'https://itbackend-p8k1.onrender.com'
     ];
 
     if (allowedOrigins.indexOf(origin) === -1) {
@@ -227,8 +228,15 @@ const server = app.listen(PORT, () => {
 // Socket.IO setup for real-time features
 const io = require('socket.io')(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    methods: ['GET', 'POST']
+    origin: [
+      process.env.CLIENT_URL || 'http://localhost:5173',
+      'http://localhost:3000',
+      'http://127.0.0.1:5173',
+      'https://it-agency-gold.vercel.app',
+      'https://itbackend-p8k1.onrender.com'
+    ],
+    methods: ['GET', 'POST'],
+    credentials: true
   }
 });
 

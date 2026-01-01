@@ -31,7 +31,7 @@ exports.getEnvironmentInfo = async (req, res) => {
             server: {
                 status: 'Running',
                 port: process.env.PORT || 5000,
-                baseUrl: `http://localhost:${process.env.PORT || 5000}`
+                baseUrl: process.env.RENDER_EXTERNAL_URL || `http://localhost:${process.env.PORT || 5000}`
             },
             system: systemInfo,
             timestamp: new Date().toISOString()
