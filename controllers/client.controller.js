@@ -196,12 +196,10 @@ exports.getAllClients = async (req, res) => {
       raw: true
     });
 
-    // Add a default logo if not present and flatten JSON fields
+    // Add a default logo if not present
     const clientsWithLogo = clients.map(client => ({
       ...client,
-      logo: client.logo || '🏢', // Default emoji logo
-      contact: client.contactPerson?.name || client.contactPerson?.firstName || '',
-      address: client.address?.fullAddress || (typeof client.address === 'string' ? client.address : '')
+      logo: client.logo || '🏢' // Default emoji logo
     }));
 
     res.json({
@@ -293,14 +291,12 @@ exports.createClient = async (req, res) => {
     // Create new client
     const client = await Client.create({
       name: name.trim(),
-      // Map contact string to contactPerson JSON
-      contactPerson: contact ? { name: contact.trim() } : {},
+      contact: contact.trim(),
       email: email.toLowerCase().trim(),
       phone: phone ? phone.trim() : null,
       company: company ? company.trim() : null,
       status: ['Active', 'Inactive', 'Prospect'].includes(status) ? status : 'Active',
-      // Map address string to address JSON
-      address: address ? { fullAddress: address.trim() } : {},
+      address: address ? address.trim() : null,
       createdAt: new Date(),
       updatedAt: new Date()
     }, { transaction });
@@ -382,15 +378,14 @@ exports.updateClient = async (req, res) => {
     }
 
     // Prepare update data
-    // Prepare update data
     const updateData = {
       ...(name && { name: name.trim() }),
-      ...(contact && { contactPerson: { name: contact.trim() } }),
+      ...(contact && { contact: contact.trim() }),
       ...(email && { email: email.toLowerCase().trim() }),
       ...(phone !== undefined && { phone: phone ? phone.trim() : null }),
       ...(company !== undefined && { company: company ? company.trim() : null }),
       ...(status && { status: ['Active', 'Inactive', 'Prospect'].includes(status) ? status : existingClient.status }),
-      ...(address !== undefined && { address: address ? { fullAddress: address.trim() } : {} }),
+      ...(address !== undefined && { address: address ? address.trim() : null }),
       updatedAt: new Date()
     };
 
@@ -497,9 +492,7 @@ exports.searchClients = async (req, res) => {
     // Add default logo if not present
     const clientsWithLogo = clients.map(client => ({
       ...client,
-      logo: client.logo || '🏢',
-      contact: client.contactPerson?.name || '',
-      address: client.address?.fullAddress || ''
+      logo: client.logo || '🏢'
     }));
 
     res.json({

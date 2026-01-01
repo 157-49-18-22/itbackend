@@ -27,9 +27,13 @@ const Client = sequelize.define('Client', {
     type: DataTypes.STRING(20),
     allowNull: true
   },
+  contact: {
+    type: DataTypes.STRING(100),
+    allowNull: false
+  },
   address: {
-    type: DataTypes.JSON,
-    defaultValue: {}
+    type: DataTypes.TEXT,
+    allowNull: true
   },
   industry: {
     type: DataTypes.STRING(100),
@@ -39,10 +43,7 @@ const Client = sequelize.define('Client', {
     type: DataTypes.STRING(255),
     allowNull: true
   },
-  contactPerson: {
-    type: DataTypes.JSON,
-    defaultValue: {}
-  },
+  // contactPerson field removed in favor of simple 'contact' string
   status: {
     type: DataTypes.ENUM('Active', 'Inactive', 'Prospect'),
     defaultValue: 'Active'

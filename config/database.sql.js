@@ -64,7 +64,7 @@ const connectDB = async () => {
 
     // Sync models in development (creates tables if they don't exist)
     // Sync models (creates tables/columns if they don't exist)
-    // ENABLED FOR PRODUCTION to ensure schema updates on Render
+    // ENABLED GLOBALLY TEMPORARILY to ensure schema updates on Render
     await sequelize.sync({ alter: true });
     console.log('✅ Database tables synchronized (Alter enabled)');
   } catch (error) {
