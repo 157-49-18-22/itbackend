@@ -32,10 +32,6 @@ const UAT = sequelize.define('UAT', {
     type: DataTypes.STRING,
     allowNull: true
   },
-  commentsCount: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0
-  },
   projectId: {
     type: DataTypes.INTEGER,
     allowNull: true,
