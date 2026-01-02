@@ -6,24 +6,27 @@ exports.getAllReviews = async (req, res) => {
             order: [['created_at', 'DESC']]
         });
 
-        // Map snake_case DB columns to camelCase for frontend (if needed, though Sequelize can do this via getters if configured)
-        const reviewsMapped = reviews.map(r => ({
-            id: r.id,
-            title: r.title,
-            description: r.description,
-            author: r.author,
-            reviewer: r.reviewer,
-            status: r.status,
-            priority: r.priority,
-            branch: r.branch,
-            codeUrl: r.code_url,
-            filesChanged: r.files_changed,
-            linesAdded: r.lines_added,
-            linesRemoved: r.lines_removed,
-            comments: r.comments_count,
-            createdAt: r.created_at,
-            updatedAt: r.updated_at
-        }));
+        // Map Sequelize instances to plain objects for frontend
+        const reviewsMapped = reviews.map(r => {
+            const data = r.toJSON();
+            return {
+                id: data.id,
+                title: data.title,
+                description: data.description,
+                author: data.author,
+                reviewer: data.reviewer,
+                status: data.status,
+                priority: data.priority,
+                branch: data.branch,
+                codeUrl: data.code_url,
+                filesChanged: data.files_changed,
+                linesAdded: data.lines_added,
+                linesRemoved: data.lines_removed,
+                comments: data.comments_count,
+                createdAt: data.created_at || data.createdAt,
+                updatedAt: data.updated_at || data.updatedAt
+            };
+        });
 
         res.status(200).json({ success: true, data: reviewsMapped });
     } catch (error) {
@@ -35,16 +38,17 @@ exports.getAllReviews = async (req, res) => {
 exports.createReview = async (req, res) => {
     try {
         console.log('Creating code review with data:', req.body);
-        const { title, description, branch, codeUrl, author = 'Current User' } = req.body;
+        const { title, description, branch, codeUrl, status = 'pending', priority = 'medium' } = req.body;
+        const authorName = req.user ? req.user.name : (req.body.author || 'Current User');
 
         const review = await CodeReview.create({
             title,
             description,
             branch,
             code_url: codeUrl,
-            author,
-            status: 'pending',
-            priority: 'medium'
+            author: authorName,
+            status: status.toLowerCase(),
+            priority: priority.toLowerCase()
         });
 
         res.status(201).json({ success: true, message: 'Review created', data: review });

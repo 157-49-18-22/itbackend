@@ -6,19 +6,22 @@ exports.getAllDocuments = async (req, res) => {
             order: [['updated_at', 'DESC']]
         });
 
-        // Map snake_case to camelCase
-        const docsMapped = docs.map(d => ({
-            id: d.id,
-            title: d.title,
-            category: d.category,
-            description: d.description,
-            content: d.content,
-            author: d.author,
-            status: d.status,
-            views: d.views,
-            sections: d.sections_count,
-            lastUpdated: d.updated_at ? new Date(d.updated_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-        }));
+        // Map Sequelize instances to plain objects for frontend
+        const docsMapped = docs.map(d => {
+            const data = d.toJSON();
+            return {
+                id: data.id,
+                title: data.title,
+                category: data.category,
+                description: data.description,
+                content: data.content,
+                author: data.author,
+                status: data.status,
+                views: data.views,
+                sections: data.sections_count,
+                lastUpdated: (data.updated_at || data.updatedAt) ? new Date(data.updated_at || data.updatedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            };
+        });
 
         res.status(200).json({ success: true, data: docsMapped });
     } catch (error) {
@@ -29,14 +32,15 @@ exports.getAllDocuments = async (req, res) => {
 
 exports.createDocument = async (req, res) => {
     try {
-        const { title, category, description, content, author = 'Current User' } = req.body;
+        const { title, category, description, content } = req.body;
+        const authorName = req.user ? req.user.name : (req.body.author || 'Current User');
 
         const doc = await Documentation.create({
             title,
             category,
             description,
             content,
-            author,
+            author: authorName,
             status: 'draft',
             views: 0,
             sections_count: 1

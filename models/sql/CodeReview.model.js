@@ -24,12 +24,18 @@ const CodeReview = sequelize.define('CodeReview', {
         allowNull: true
     },
     status: {
-        type: DataTypes.ENUM('pending', 'approved', 'rejected'),
-        defaultValue: 'pending'
+        type: DataTypes.STRING,
+        defaultValue: 'pending',
+        validate: {
+            isIn: [['pending', 'approved', 'rejected']]
+        }
     },
     priority: {
-        type: DataTypes.ENUM('low', 'medium', 'high'),
-        defaultValue: 'medium'
+        type: DataTypes.STRING,
+        defaultValue: 'medium',
+        validate: {
+            isIn: [['low', 'medium', 'high']]
+        }
     },
     branch: {
         type: DataTypes.STRING,

@@ -6,19 +6,22 @@ exports.getAllDiscussions = async (req, res) => {
             order: [['last_activity', 'DESC']]
         });
 
-        // Map snake_case DB columns to camelCase for frontend
-        const discussionsMapped = discussions.map(d => ({
-            id: d.id,
-            title: d.title,
-            author: d.author,
-            category: d.category,
-            content: d.content,
-            excerpt: d.excerpt,
-            tags: d.tags,
-            replies: d.replies_count,
-            views: d.views_count,
-            lastActivity: d.last_activity
-        }));
+        // Map Sequelize instances to plain objects for frontend
+        const discussionsMapped = discussions.map(d => {
+            const data = d.toJSON();
+            return {
+                id: data.id,
+                title: data.title,
+                author: data.author,
+                category: data.category,
+                content: data.content,
+                excerpt: data.excerpt,
+                tags: data.tags,
+                replies: data.replies_count,
+                views: data.views_count,
+                lastActivity: data.last_activity
+            };
+        });
 
         res.status(200).json({ success: true, data: discussionsMapped });
     } catch (error) {
@@ -29,7 +32,8 @@ exports.getAllDiscussions = async (req, res) => {
 
 exports.createDiscussion = async (req, res) => {
     try {
-        const { title, category, content, tags, author = 'Current User' } = req.body;
+        const { title, category, content, tags } = req.body;
+        const authorName = req.user ? req.user.name : (req.body.author || 'Current User');
 
         const excerpt = content.substring(0, 100) + (content.length > 100 ? '...' : '');
 
@@ -39,7 +43,7 @@ exports.createDiscussion = async (req, res) => {
             content,
             excerpt,
             tags: tags || [],
-            author,
+            author: authorName,
             replies_count: 0,
             views_count: 0,
             last_activity: new Date()

@@ -28,8 +28,11 @@ const Documentation = sequelize.define('Documentation', {
         allowNull: true
     },
     status: {
-        type: DataTypes.ENUM('draft', 'published', 'archived'),
-        defaultValue: 'draft'
+        type: DataTypes.STRING,
+        defaultValue: 'draft',
+        validate: {
+            isIn: [['draft', 'published', 'archived']]
+        }
     },
     views: {
         type: DataTypes.INTEGER,
