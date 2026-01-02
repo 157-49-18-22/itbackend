@@ -67,7 +67,10 @@ const notificationsEnhancedRoutes = require('./routes/notifications.routes');
 const approvalsEnhancedRoutes = require('./routes/approvals.routes');
 
 // Middleware
-app.use(helmet()); // Security headers@stage
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+  contentSecurityPolicy: false,
+})); // Security headers
 app.use(compression()); // Compress responses
 // Enhanced CORS configuration
 app.use(cors({
@@ -120,7 +123,10 @@ app.use('/api/', limiter);
 
 const path = require('path');
 // Static files (for uploads)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', (req, res, next) => {
+  res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+}, express.static(path.join(__dirname, 'uploads')));
 
 // Health check route
 app.get('/health', (req, res) => {
