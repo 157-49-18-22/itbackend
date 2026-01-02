@@ -46,7 +46,7 @@ const Documentation = sequelize.define('Documentation', {
     tableName: 'documents',
     timestamps: true,
     createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    updatedAt: 'last_updated'
 });
 
 module.exports = Documentation;

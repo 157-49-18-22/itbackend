@@ -12,8 +12,11 @@ const VersionHistory = sequelize.define('VersionHistory', {
         allowNull: false
     },
     type: {
-        type: DataTypes.ENUM('major', 'minor', 'patch'),
-        defaultValue: 'patch'
+        type: DataTypes.STRING,
+        defaultValue: 'patch',
+        validate: {
+            isIn: [['major', 'minor', 'patch']]
+        }
     },
     title: {
         type: DataTypes.STRING,
@@ -60,8 +63,11 @@ const VersionHistory = sequelize.define('VersionHistory', {
         defaultValue: []
     },
     status: {
-        type: DataTypes.ENUM('deployed', 'staging', 'development'),
-        defaultValue: 'development'
+        type: DataTypes.STRING,
+        defaultValue: 'development',
+        validate: {
+            isIn: [['deployed', 'staging', 'development']]
+        }
     },
     deployed_to: {
         type: DataTypes.STRING,

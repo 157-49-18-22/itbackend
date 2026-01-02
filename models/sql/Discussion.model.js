@@ -47,7 +47,7 @@ const Discussion = sequelize.define('Discussion', {
     tableName: 'discussions',
     timestamps: true,
     createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    updatedAt: 'last_activity'
 });
 
 module.exports = Discussion;

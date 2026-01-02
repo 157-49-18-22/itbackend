@@ -19,7 +19,7 @@ exports.getAllDiscussions = async (req, res) => {
                 tags: data.tags,
                 replies: data.replies_count,
                 views: data.views_count,
-                lastActivity: data.last_activity
+                lastActivity: data.last_activity || data.updatedAt || data.updated_at
             };
         });
 
@@ -32,22 +32,24 @@ exports.getAllDiscussions = async (req, res) => {
 
 exports.createDiscussion = async (req, res) => {
     try {
+        console.log('Creating discussion with data:', req.body);
         const { title, category, content, tags } = req.body;
         const authorName = req.user ? req.user.name : (req.body.author || 'Current User');
 
-        const excerpt = content.substring(0, 100) + (content.length > 100 ? '...' : '');
+        const excerpt = content ? (content.substring(0, 100) + (content.length > 100 ? '...' : '')) : '';
 
         const discussion = await Discussion.create({
             title,
             category,
             content,
-            excerpt,
-            tags: tags || [],
+            excerpt: excerpt,
+            tags: Array.isArray(tags) ? tags : [],
             author: authorName,
             replies_count: 0,
-            views_count: 0,
-            last_activity: new Date()
+            views_count: 0
         });
+
+        console.log('Discussion created successfully:', discussion.id);
 
         res.status(201).json({ success: true, message: 'Discussion created', data: discussion });
     } catch (error) {

@@ -19,7 +19,7 @@ exports.getAllDocuments = async (req, res) => {
                 status: data.status,
                 views: data.views,
                 sections: data.sections_count,
-                lastUpdated: (data.updated_at || data.updatedAt) ? new Date(data.updated_at || data.updatedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                lastUpdated: (data.last_updated || data.updatedAt || data.updated_at) ? new Date(data.last_updated || data.updatedAt || data.updated_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
             };
         });
 
@@ -32,6 +32,7 @@ exports.getAllDocuments = async (req, res) => {
 
 exports.createDocument = async (req, res) => {
     try {
+        console.log('Creating document with data:', req.body);
         const { title, category, description, content } = req.body;
         const authorName = req.user ? req.user.name : (req.body.author || 'Current User');
 
@@ -45,6 +46,8 @@ exports.createDocument = async (req, res) => {
             views: 0,
             sections_count: 1
         });
+
+        console.log('Document created successfully:', doc.id);
 
         res.status(201).json({ success: true, message: 'Document created', data: doc });
     } catch (error) {
