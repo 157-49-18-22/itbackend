@@ -24,10 +24,10 @@ router.post('/single', upload.single('file'), async (req, res) => {
       uploadedAt: new Date()
     };
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: 'File uploaded successfully',
-      file: fileData 
+      file: fileData
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -51,10 +51,10 @@ router.post('/multiple', upload.array('files', 10), async (req, res) => {
       uploadedAt: new Date()
     }));
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: `${req.files.length} files uploaded successfully`,
-      files: filesData 
+      files: filesData
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -65,7 +65,7 @@ router.post('/multiple', upload.array('files', 10), async (req, res) => {
 router.delete('/:filename', async (req, res) => {
   try {
     const { filename } = req.params;
-    const filePath = path.join(__dirname, '../../uploads', filename);
+    const filePath = path.join(__dirname, '../uploads', filename);
 
     // Check if file exists
     if (!fs.existsSync(filePath)) {
@@ -85,7 +85,7 @@ router.delete('/:filename', async (req, res) => {
 router.get('/:filename', async (req, res) => {
   try {
     const { filename } = req.params;
-    const filePath = path.join(__dirname, '../../uploads', filename);
+    const filePath = path.join(__dirname, '../uploads', filename);
 
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ success: false, message: 'File not found' });

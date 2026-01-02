@@ -5,7 +5,7 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 // Ensure uploads directory exists
-const UPLOAD_DIR = path.join(__dirname, '../../uploads/wireframes');
+const UPLOAD_DIR = path.join(__dirname, '../uploads/wireframes');
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
@@ -13,7 +13,7 @@ if (!fs.existsSync(UPLOAD_DIR)) {
 // Save file to local storage
 const saveFile = (file) => {
   try {
-    const fileExt = path.extname(file.originalname);
+    const fileExt = path.extname(file.originalname).trim();
     const fileName = `${uuidv4()}${fileExt}`;
     const filePath = path.join(UPLOAD_DIR, fileName);
 
@@ -32,7 +32,7 @@ const saveFile = (file) => {
 const deleteFile = (filePath) => {
   try {
     if (filePath) {
-      const fullPath = path.join(__dirname, '../..', filePath);
+      const fullPath = path.join(__dirname, '..', filePath);
       if (fs.existsSync(fullPath)) {
         fs.unlinkSync(fullPath);
         return true;

@@ -118,8 +118,9 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+const path = require('path');
 // Static files (for uploads)
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health check route
 app.get('/health', (req, res) => {
