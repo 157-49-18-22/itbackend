@@ -103,6 +103,6 @@ router.put(
 // @route   DELETE /api/mockups/:id
 // @desc    Delete a mockup
 // @access  Private
-router.delete('/:id', authorize('admin'), deleteMockup);
+router.delete('/:id', authorize('admin', 'developer', 'designer', 'ui/ux', 'ui-ux', 'manager'), deleteMockup);
 
 module.exports = router;

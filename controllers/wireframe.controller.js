@@ -14,14 +14,14 @@ if (!fs.existsSync(UPLOAD_DIR)) {
 const saveFile = (file) => {
   try {
     const fileExt = path.extname(file.originalname);
-    const fileName = `${uuidv4()}${fileExt} `;
+    const fileName = `${uuidv4()}${fileExt}`;
     const filePath = path.join(UPLOAD_DIR, fileName);
 
     // Move file from temp to uploads directory
     fs.renameSync(file.path, filePath);
 
     // Return relative path
-    return `/ uploads / wireframes / ${fileName} `;
+    return `/uploads/wireframes/${fileName}`;
   } catch (error) {
     console.error('Error saving file:', error);
     throw new Error('Failed to save file');

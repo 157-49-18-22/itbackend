@@ -91,11 +91,6 @@ Prototype.associate = (models) => {
     foreignKey: 'updatedBy',
     as: 'updater',
   });
-
-  // Add hook to update updatedAt when prototype is updated
-  Prototype.addHook('beforeUpdate', async (prototype) => {
-    prototype.updatedAt = new Date();
-  });
 };
 
 module.exports = Prototype;

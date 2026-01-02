@@ -60,7 +60,7 @@ const Wireframe = sequelize.define('Wireframe', {
   tableName: 'wireframes', // Explicitly set table name
   underscored: true, // Convert camelCase to snake_case
   timestamps: true,
-  paranoid: true, // Enable soft delete
+  paranoid: false, // Disable soft delete for permanent deletion
 });
 
 // Add associations

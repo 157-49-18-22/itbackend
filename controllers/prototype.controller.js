@@ -88,6 +88,12 @@ const createPrototype = async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating prototype:', error);
+    if (error.name === 'SequelizeValidationError') {
+      return res.status(400).json({
+        success: false,
+        error: error.errors[0].message,
+      });
+    }
     res.status(500).json({
       success: false,
       error: 'Failed to create prototype',
@@ -187,8 +193,8 @@ const getPrototypeById = async (req, res) => {
 const updatePrototype = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, version, status, category, link } = req.body;
-    const userId = req.user.id; // Assuming user is authenticated
+    const { title, description, version, status, category, link, projectId } = req.body;
+    const userId = req.user?.id;
 
     const prototype = await Prototype.findByPk(id);
     if (!prototype) {
@@ -211,22 +217,20 @@ const updatePrototype = async (req, res) => {
     }
 
     // Update prototype
-    const updatedPrototype = await prototype.update({
+    await prototype.update({
       title: title || prototype.title,
       description: description !== undefined ? description : prototype.description,
       imageUrl,
-      link: link !== undefined ? link : prototype.link,
+      link: (link && link.trim() !== '') ? link : null,
       version: version || prototype.version,
       status: status || prototype.status,
       category: category || prototype.category,
+      projectId: projectId || prototype.projectId,
       updatedBy: userId,
-    }, {
-      where: { id },
-      returning: true,
     });
 
     // Fetch the updated prototype with related data
-    const result = await Prototype.findByPk(updatedPrototype.id, {
+    const result = await Prototype.findByPk(id, {
       include: [
         { model: Project, as: 'project', attributes: ['id', 'name'] },
         { model: User, as: 'creator', attributes: ['id', 'name', 'email'] },
@@ -240,6 +244,12 @@ const updatePrototype = async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating prototype:', error);
+    if (error.name === 'SequelizeValidationError') {
+      return res.status(400).json({
+        success: false,
+        error: error.errors[0].message,
+      });
+    }
     res.status(500).json({
       success: false,
       error: 'Failed to update prototype',
