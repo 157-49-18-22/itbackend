@@ -60,7 +60,7 @@ const Blocker = sequelize.define('Blocker', {
         allowNull: true
     }
 }, {
-    tableName: 'Blockers',
+    tableName: 'blockers',
     timestamps: true
 });
 

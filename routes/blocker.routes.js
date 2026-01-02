@@ -11,12 +11,13 @@ router.get('/', async (req, res) => {
         const { projectId, status, priority } = req.query;
         const where = {};
 
-        // Filter by user's projects if not admin
-        if (req.user.role !== 'admin') {
+        // Filter by user's projects if not admin/PM
+        const userRole = req.user.role?.toLowerCase();
+        if (userRole !== 'admin' && userRole !== 'project manager') {
             where.reportedBy = req.user.id;
         }
 
-        if (projectId) where.projectId = projectId;
+        if (projectId) where.projectId = parseInt(projectId);
         if (status) where.status = status;
         if (priority) where.priority = priority;
 
@@ -34,13 +35,14 @@ router.get('/', async (req, res) => {
         res.json({ success: true, data: blockers });
     } catch (error) {
         console.error('Error fetching blockers:', error);
-        res.status(500).json({ success: false, message: 'Failed to fetch blockers' });
+        res.status(500).json({ success: false, message: 'Failed to fetch blockers', error: error.message });
     }
 });
 
 // Create a new blocker
 router.post('/', async (req, res) => {
     try {
+        console.log('Creating blocker with data:', req.body);
         const { title, description, priority, taskId, projectId } = req.body;
 
         if (!title || !description || !projectId) {
@@ -50,15 +52,19 @@ router.post('/', async (req, res) => {
             });
         }
 
-        const blocker = await Blocker.create({
+        const blockerData = {
             title,
             description,
             priority: priority || 'medium',
-            taskId: taskId || null,
-            projectId,
+            taskId: taskId && taskId !== '' ? parseInt(taskId) : null,
+            projectId: parseInt(projectId),
             reportedBy: req.user.id,
             status: 'open'
-        });
+        };
+
+        console.log('Processed blocker data:', blockerData);
+
+        const blocker = await Blocker.create(blockerData);
 
         const createdBlocker = await Blocker.findByPk(blocker.id, {
             include: [
@@ -70,8 +76,13 @@ router.post('/', async (req, res) => {
 
         res.status(201).json({ success: true, data: createdBlocker });
     } catch (error) {
-        console.error('Error creating blocker:', error);
-        res.status(500).json({ success: false, message: 'Failed to create blocker' });
+        console.error('CRITICAL ERROR creating blocker:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to create blocker',
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 });
 

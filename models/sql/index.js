@@ -30,6 +30,10 @@ const TestResult = require('./TestResult.model');
 const Blocker = require('./Blocker.model');
 const Feedback = require('./Feedback.model');
 const PerformanceTest = require('./PerformanceTest.model');
+const CodeReview = require('./CodeReview.model');
+const Discussion = require('./Discussion.model');
+const Documentation = require('./Documentation.model');
+const VersionHistory = require('./VersionHistory.model');
 
 // Define relationships
 
@@ -225,7 +229,11 @@ const models = {
   TestResult,
   Blocker,
   Feedback,
-  PerformanceTest
+  PerformanceTest,
+  CodeReview,
+  Discussion,
+  Documentation,
+  VersionHistory
 };
 
 // Run associations for each model
