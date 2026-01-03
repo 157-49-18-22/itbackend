@@ -7,13 +7,14 @@ const { logActivity } = require('../utils/activity.utils');
 // @access  Private
 exports.getAllProjects = async (req, res) => {
   try {
-    const { status, priority, currentPhase, search } = req.query;
+    const { status, priority, currentPhase, search, clientId } = req.query;
 
     let where = { isArchived: false };
 
     if (status) where.status = status;
     if (priority) where.priority = priority;
     if (currentPhase) where.currentPhase = currentPhase;
+    if (clientId) where.clientId = clientId;
 
     if (search) {
       where[Op.or] = [

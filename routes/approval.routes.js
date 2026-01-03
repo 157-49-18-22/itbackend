@@ -106,8 +106,10 @@ router.put('/:id/approve', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Approval not found' });
     }
 
+    const { status = 'Approved', feedback } = req.body;
     await approval.update({
-      status: 'Approved',
+      status: status,
+      feedback: feedback || approval.feedback,
       approvedAt: new Date()
     });
 

@@ -157,13 +157,25 @@ exports.transitionStage = async (req, res) => {
             transaction
         });
 
-        // Update project current stage
+        // Update project current stage, phase and status
+        const isCompleted = toStageCode === 'completed';
         await sequelize.query(`
       UPDATE projects 
-      SET "currentStage" = :toStage, "updatedAt" = CURRENT_TIMESTAMP
+      SET "currentStage" = :toStageCode,
+          "currentPhase" = :toStageName,
+          "status" = :status,
+          "progress" = :progress,
+          ${isCompleted ? '"actualEndDate" = CURRENT_TIMESTAMP,' : ''}
+          "updatedAt" = CURRENT_TIMESTAMP
       WHERE id = :projectId
     `, {
-            replacements: { projectId, toStage: toStageCode },
+            replacements: {
+                projectId,
+                toStageCode,
+                toStageName: toStage,
+                status: isCompleted ? 'Completed' : 'In Progress',
+                progress: isCompleted ? 100 : 0
+            },
             type: sequelize.QueryTypes.UPDATE,
             transaction
         });

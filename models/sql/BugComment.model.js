@@ -24,7 +24,7 @@ BugComment.associate = (models) => {
     foreignKey: 'bug_id',
     as: 'bug'
   });
-  
+
   BugComment.belongsTo(models.User, {
     foreignKey: 'user_id',
     as: 'author'

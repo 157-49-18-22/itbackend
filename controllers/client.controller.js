@@ -8,38 +8,54 @@ exports.getClientDashboard = async (req, res) => {
   try {
     const userRole = req.user.role ? req.user.role.toLowerCase() : 'user';
     const userEmail = req.user.email;
+    const { projectId } = req.query;
 
     let project = null;
 
-    // Logic for Admin/Staff: Show the most recent active project as a preview
-    if (['admin', 'project_manager', 'developer', 'tester', 'ui/ux', 'designer'].includes(userRole)) {
-      project = await Project.findOne({
-        where: {
-          status: { [Op.notIn]: ['Cancelled', 'Archived'] }
-        },
-        order: [['updatedAt', 'DESC']], // Show most recently updated
-        include: [{ model: Client, as: 'client' }]
-      });
-    } else {
-      // Logic for Clients: strict email check
-      // Find client by email (assuming linked via email)
-      const client = await Client.findOne({ where: { email: userEmail } });
+    if (projectId) {
+      // Logic for specific project requested via dropdown
+      if (['admin', 'project_manager', 'developer', 'tester', 'ui/ux', 'designer'].includes(userRole)) {
+        project = await Project.findByPk(projectId, {
+          include: [{ model: Client, as: 'client' }]
+        });
+      } else {
+        const client = await Client.findOne({ where: { email: userEmail } });
+        if (client) {
+          project = await Project.findOne({
+            where: { id: projectId, clientId: client.id }
+          });
+        }
+      }
+    }
 
-      if (!client) {
-        return res.status(404).json({
-          success: false,
-          message: 'Client profile not found. Please ensure your account email matches a registered client.'
+    // Default logic if no projectId or specific project not found
+    if (!project) {
+      if (['admin', 'project_manager', 'developer', 'tester', 'ui/ux', 'designer'].includes(userRole)) {
+        project = await Project.findOne({
+          where: {
+            status: { [Op.notIn]: ['Cancelled', 'Archived'] }
+          },
+          order: [['updatedAt', 'DESC']],
+          include: [{ model: Client, as: 'client' }]
+        });
+      } else {
+        const client = await Client.findOne({ where: { email: userEmail } });
+
+        if (!client) {
+          return res.status(404).json({
+            success: false,
+            message: 'Client profile not found. Please ensure your account email matches a registered client.'
+          });
+        }
+
+        project = await Project.findOne({
+          where: {
+            clientId: client.id,
+            status: { [Op.notIn]: ['Cancelled', 'Archived'] }
+          },
+          order: [['createdAt', 'DESC']]
         });
       }
-
-      // Get the most recent active project
-      project = await Project.findOne({
-        where: {
-          clientId: client.id,
-          status: { [Op.notIn]: ['Cancelled', 'Archived'] }
-        },
-        order: [['createdAt', 'DESC']]
-      });
     }
 
     if (!project) {

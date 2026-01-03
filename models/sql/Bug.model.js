@@ -52,17 +52,17 @@ Bug.associate = (models) => {
     foreignKey: 'project_id',
     as: 'bugProject'
   });
-  
+
   Bug.belongsTo(models.User, {
     foreignKey: 'reported_by',
     as: 'reporter'
   });
-  
+
   Bug.belongsTo(models.User, {
     foreignKey: 'assigned_to',
     as: 'assignee'
   });
-  
+
   Bug.hasMany(models.BugComment, {
     foreignKey: 'bug_id',
     as: 'comments'
