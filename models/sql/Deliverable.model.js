@@ -28,7 +28,7 @@ const Deliverable = sequelize.define('Deliverable', {
     allowNull: false
   },
   status: {
-    type: DataTypes.ENUM('Draft', 'In Review', 'Approved', 'Rejected', 'Final'),
+    type: DataTypes.ENUM('Draft', 'Pending Approval', 'Approved', 'Rejected'),
     defaultValue: 'Draft'
   },
   version: {
