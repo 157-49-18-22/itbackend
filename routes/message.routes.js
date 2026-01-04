@@ -62,6 +62,18 @@ router.get('/', async (req, res) => {
           msgData.recipientDetails = [];
         }
 
+        // Fetch parent message if exists
+        if (msgData.parentMessageId) {
+          const parent = await Message.findByPk(msgData.parentMessageId, {
+            include: [{ model: User, as: 'sender', attributes: ['name'] }]
+          });
+          msgData.replyTo = parent ? {
+            id: parent.id,
+            content: parent.content,
+            sender: parent.sender?.name
+          } : null;
+        }
+
         return msgData;
       })
     );
@@ -91,11 +103,26 @@ router.post('/', async (req, res) => {
 
     // Generate thread ID if missing
     if (!thread) {
+      if (recipientsList.length === 0) {
+        return res.status(400).json({ success: false, message: "Recipients are required for new threads" });
+      }
       // Start of a new conversation
       // Create a unique thread ID based on participants
       const participants = [senderId, ...recipientsList].sort((a, b) => a - b);
       thread = participants.join('_');
+    } else if (recipientsList.length === 0) {
+      // For existing threads, if recipients aren't provided, 
+      // derive them from the thread ID to ensure visibility
+      if (thread.includes('_')) {
+        recipientsList = thread.split('_')
+          .map(id => parseInt(id))
+          .filter(id => !isNaN(id));
+      }
     }
+
+    // Ensure sender is NOT in the recipients list to avoid double counting, 
+    // but the thread ID should always include all participants.
+    // The GET route handles sender visibility anyway.
 
     // Create message
     const message = await Message.create({
@@ -123,12 +150,31 @@ router.post('/', async (req, res) => {
 
 router.put('/:id/read', async (req, res) => {
   try {
-    const message = await Message.findById(req.params.id);
+    const message = await Message.findByPk(req.params.id);
     if (!message.readBy.find(r => r.user.toString() === req.user.id)) {
       message.readBy.push({ user: req.user.id });
       await message.save();
     }
     res.json({ success: true, data: message });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const message = await Message.findByPk(req.params.id);
+    if (!message) return res.status(404).json({ success: false, message: 'Message not found' });
+
+    // Only sender can delete for now (or archive it)
+    if (message.senderId !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    }
+
+    message.isArchived = true;
+    await message.save();
+
+    res.json({ success: true, message: 'Message deleted' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
