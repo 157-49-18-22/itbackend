@@ -3,7 +3,7 @@ const { Documentation } = require('../models/sql');
 exports.getAllDocuments = async (req, res) => {
     try {
         const docs = await Documentation.findAll({
-            order: [['updated_at', 'DESC']]
+            order: [['last_updated', 'DESC']]
         });
 
         // Map Sequelize instances to plain objects for frontend
@@ -52,6 +52,68 @@ exports.createDocument = async (req, res) => {
         res.status(201).json({ success: true, message: 'Document created', data: doc });
     } catch (error) {
         console.error('Error creating document:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.getDocumentById = async (req, res) => {
+    try {
+        const doc = await Documentation.findByPk(req.params.id);
+        if (!doc) {
+            return res.status(404).json({ success: false, message: 'Document not found' });
+        }
+        res.status(200).json({ success: true, data: doc });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.updateDocument = async (req, res) => {
+    try {
+        const { title, category, description, content, status } = req.body;
+        const doc = await Documentation.findByPk(req.params.id);
+
+        if (!doc) {
+            return res.status(404).json({ success: false, message: 'Document not found' });
+        }
+
+        await doc.update({
+            title: title !== undefined ? title : doc.title,
+            category: category !== undefined ? category : doc.category,
+            description: description !== undefined ? description : doc.description,
+            content: content !== undefined ? content : doc.content,
+            status: status !== undefined ? status : doc.status,
+            last_updated: new Date()
+        });
+
+        res.status(200).json({ success: true, message: 'Document updated', data: doc });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.incrementViews = async (req, res) => {
+    try {
+        const doc = await Documentation.findByPk(req.params.id);
+        if (!doc) {
+            return res.status(404).json({ success: false, message: 'Document not found' });
+        }
+        await doc.increment('views');
+        res.status(200).json({ success: true });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+exports.deleteDocument = async (req, res) => {
+    try {
+        const doc = await Documentation.findByPk(req.params.id);
+        if (!doc) {
+            return res.status(404).json({ success: false, message: 'Document not found' });
+        }
+        await doc.destroy();
+        res.status(200).json({ success: true, message: 'Document deleted' });
+    } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 };
